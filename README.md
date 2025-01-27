@@ -10,3 +10,8 @@ stash的文件夹浏览界面实现
 6. 支持docker部署；
 # 部署
 docker run --restart=always -v [替换为本docker目录]:/app/data -v [替换为stash数据库]:/app/stash-go.sqlite -e base_url=[stash的地址，不要去掉“/”] -e username=[登录用户名] -e password=[登录密码] -e api_key=[stashApi] -p 8000:8000 -d unimrq/stash-folder-view
+# TODO
+1. 优化悬浮按钮逻辑；
+2. 瀑布流显示文件名以及收藏按钮；
+3. 收藏文件及文件夹在首页显示；
+4. 登录功能完善；
