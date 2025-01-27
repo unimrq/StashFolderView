@@ -94,6 +94,24 @@ def get_image_and_scene_ids(file_id):
     return image_id[0] if image_id else None, scene_id[0] if scene_id else None, is_video
 
 
+def get_image_status(image_id):
+    conn = sqlite3.connect('stash-go.sqlite')
+    cursor = conn.cursor()
+    cursor.execute("SELECT title, rating FROM images WHERE id = ?", (image_id,))
+    image_status = cursor.fetchone()
+    conn.close()
+    return image_status[0], image_status[1]
+
+
+def get_scene_status(scene_id):
+    conn = sqlite3.connect('stash-go.sqlite')
+    cursor = conn.cursor()
+    cursor.execute("SELECT title, rating FROM scenes WHERE id = ?", (scene_id,))
+    scene_status = cursor.fetchone()
+    conn.close()
+    return scene_status[0], scene_status[1]
+
+
 @app.route('/image/<path:image_id>')
 async def get_image(image_id):
     # 图片的外部URL
@@ -234,6 +252,34 @@ def get_favorite_files(offset, per_page):
     return [file_id[0] for file_id in images_id], [file_id[0] for file_id in scenes_id]
 
 
+@app.route('/update_file_like_status', methods=['POST'])
+def update_file_like_status():
+    # 获取JSON数据
+    data = request.get_json()
+
+    file_id = data['file_id']
+    rating = data['rating']
+    is_video = data['is_video']
+
+    if int(is_video) == 1:
+        payload = {
+            "query": "mutation { sceneUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
+        }
+    else:
+        payload = {
+            "query": "mutation { imageUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
+        }
+
+    # 发起GraphQL请求
+    response = requests.post(base_url + 'graphql', headers=headers, json=payload)
+    # print(response.status_code)
+    # print(response.json())
+    if response.ok:
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False, message='更新失败'), 400
+
+
 @app.route('/folders', methods=['GET'])
 def index():
     if not check_login():
@@ -285,23 +331,27 @@ def index():
             if image_id:
                 image_url = f"/image/{image_id}"
                 image_link = base_url + f"images/{image_id}"
-                all_urls.append((image_url, image_link, is_video))
+                image_title, image_rating = get_image_status(image_id)
+                all_urls.append((image_url, image_link, is_video, image_id, image_rating))
 
             if scene_id:
                 scene_url = f"/scene/{scene_id}"
                 scene_link = base_url + f"scenes/{scene_id}"
-                all_urls.append((scene_url, scene_link, is_video))
+                scene_title, scene_rating = get_scene_status(scene_id)
+                all_urls.append((scene_url, scene_link, is_video, scene_id, scene_rating))
     else:
         files_ids = get_favorite_files(offset, per_page)
         all_urls = []
         for image_id in files_ids[0]:
             image_url = f"/image/{image_id}"
             image_link = base_url + f"images/{image_id}"
-            all_urls.append((image_url, image_link, 0))
+            image_title, image_rating = get_image_status(image_id)
+            all_urls.append((image_url, image_link, 0, image_id, image_rating))
         for scene_id in files_ids[1]:
             scene_url = f"/scene/{scene_id}"
             scene_link = base_url + f"scenes/{scene_id}"
-            all_urls.append((scene_url, scene_link, 1))
+            scene_title, scene_rating = get_scene_status(scene_id)
+            all_urls.append((scene_url, scene_link, 1, scene_id, scene_rating))
 
     if len(all_urls) == 0:
         folder_has_medias = False
