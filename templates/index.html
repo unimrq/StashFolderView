@@ -74,6 +74,12 @@
             cursor: pointer; /* 鼠标悬停时显示可点击 */
         }
 
+        .home-btn{
+            font-size: 20px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
         .like-btn i,
         .check-btn i {
             font-size: 24px; /* 设置图标的大小 */
@@ -86,7 +92,7 @@
 
         .menu-btn {
             font-size: 20px;
-            margin-left: 20px;
+            margin-left: 10px;
             cursor: pointer;
         }
 
@@ -101,12 +107,17 @@
             width: 20%;
             margin-top: 50px;
             background: #fafafa;
-            overflow-y: auto;
             box-sizing: border-box;
             max-height: calc(100vh - 50px);
             height: 100vh;
             transition: transform 0.3s ease;
             border-right: 1px solid #ccc; /* 右侧边框 */
+        }
+
+        .folders_draw {
+            overflow-y: auto;
+            flex-grow: 1;  /* 占满剩余空间 */
+
         }
 
         .folders-container h2 {
@@ -115,9 +126,10 @@
 
         .breadcrumb {
             margin-left: 30px;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            font-size: 16px;
+            margin-right: 30px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 14px;
         }
 
         .breadcrumb a {
@@ -211,6 +223,10 @@
             text-align: center;
             margin-top: 50px;
         }
+        span, a {
+            margin: 0;
+            padding: 0;
+        }
 
         /* 针对移动端屏幕的样式 */
         @media (max-width: 768px) {
@@ -245,7 +261,15 @@
 <body>
 <!-- 顶部工具栏 -->
 <div class="toolbar">
-    <span class="menu-btn" id="menu-btn">&#9776; 菜单</span>
+    <div>
+
+        <span class="menu-btn" id="menu-btn">&#9776; 菜单</span>
+        <!-- 新增主页按钮 -->
+        <a href="{{ url_for('index') }}" id="home-icon" class="home-btn">
+            <i class="fas fa-home" style="color:white"></i> <!-- 白色房子图标 -->
+        </a>
+    </div>
+
     <div class="icon-btn">
         <span id="like-icon-{{ folder_id }}" class="like-btn"
               onclick="toggleLike({{ folder_id }})">
@@ -281,29 +305,30 @@
     <div id="page" data-folder-id="{{ page }}"></div>
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
     <div class="folders-container" id="folders-container">
-        <div class="breadcrumb">
+        <div class="breadcrumb" id="breadcrumb">
                 <a href="{{ url_for('index', id=None) }}">根目录</a>
                 {% for path_part, part_folder_id in current_path_parts %}
-                    <span>&gt;</span>
+                    <span>/</span>
                     <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
                 {% endfor %}
         </div>
-        <hr>
-        <ul>
-            {% for folder in root_folders %}
-                {% set folder_read = folder_details[folder.folder_id].read_status %}
-                {% set folder_like = folder_details[folder.folder_id].like_status %}
-                {% set folder_delete = folder_details[folder.folder_id].delete_status %}
-                <li id="{{ folder.folder_id }}" class="folder">
-                    <a href="{{ url_for('index', id=folder.folder_id) }}">
-                        <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
-                            {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                        <span style="color: {% if folder_read == 0 %} #007BFF {% else %} black {% endif %};">{{ folder.relative_path }}</span>
-                </div>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="folders_draw" id="folders_draw">
+            <ul>
+                {% for folder in root_folders %}
+                    {% set folder_read = folder_details[folder.folder_id].read_status %}
+                    {% set folder_like = folder_details[folder.folder_id].like_status %}
+                    {% set folder_delete = folder_details[folder.folder_id].delete_status %}
+                    <li id="{{ folder.folder_id }}" class="folder">
+                        <a href="{{ url_for('index', id=folder.folder_id) }}">
+                            <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
+                            <span style="color: {% if folder_read == 0 %} #007BFF {% else %} black {% endif %};">{{ folder.relative_path }}</span>
+                    </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 
     <!-- 右侧：文件内容展示 -->
@@ -379,6 +404,8 @@
     const menuBtn = document.getElementById('menu-btn');
     const foldersContainer = document.getElementById('folders-container');
     const filesContainer = document.getElementById('files-container');
+    const folders_draw= document.getElementById('folders_draw');
+    const breadcrumb= document.getElementById('breadcrumb');
     let isHide = localStorage.getItem('isHide');
     isHide = false
     const isMobile = window.innerWidth <= 768;
@@ -389,15 +416,18 @@
         if (isHide) {
             filesContainer.style.width = '100%';  // 设置宽度为100%
             foldersContainer.style.width = '0%'
-            foldersContainer.style.overflowY = 'hidden'
+            breadcrumb.style.display = 'none'
+            {#folders_draw.style.overflowY = 'hidden'#}
         } else {
             filesContainer.style.width = '0%';   // 恢复为原来的宽度
             foldersContainer.style.width = '100%'
-            foldersContainer.style.overflowY = 'auto'
+            breadcrumb.style.display = 'block'
+            {#folders_draw.style.overflowY = 'auto'#}
             if (folder_has_medias === 'True') {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.overflowY = 'hidden'
+                breadcrumb.style.display = 'none'
+                {#folders_draw.style.overflowY = 'hidden'#}
                 isHide = !isHide
                 localStorage.setItem('isHide', isHide);
             }
@@ -406,11 +436,13 @@
         if (isHide) {
             filesContainer.style.width = '100%';  // 设置宽度为100%
             foldersContainer.style.width = '0%'
-            foldersContainer.style.overflowY = 'hidden'
+            breadcrumb.style.display = 'none'
+            {#folders_draw.style.overflowY = 'hidden'#}
         } else {
             filesContainer.style.width = '80%';   // 恢复为原来的宽度
             foldersContainer.style.width = '20%'
-            foldersContainer.style.overflowY = 'auto'
+            breadcrumb.style.display = 'block'
+            {#folders_draw.style.overflowY = 'auto'#}
         }
     }
 
@@ -423,21 +455,25 @@
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.overflowY = 'hidden'
+                breadcrumb.style.display = 'none'
+                {#folders_draw.style.overflowY = 'hidden'#}
             } else {
                 filesContainer.style.width = '0%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '100%'
-                foldersContainer.style.overflowY = 'auto'
+                breadcrumb.style.display = 'block'
+                {#folders_draw.style.overflowY = 'auto'#}
             }
         } else {
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.overflowY = 'hidden'
+                breadcrumb.style.display = 'none'
+                {#folders_draw.style.overflowY = 'hidden'#}
             } else {
                 filesContainer.style.width = '80%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '20%'
-                foldersContainer.style.overflowY = 'auto'
+                breadcrumb.style.display = 'block'
+                {#folders_draw.style.overflowY = 'auto'#}
             }
         }
     });

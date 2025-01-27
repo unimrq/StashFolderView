@@ -253,17 +253,24 @@ def get_favorite_files(offset, per_page):
 
 
 def get_file_status(file_id, is_video):
-    if bool(is_video):
+    print(is_video)
+    if is_video:
         payload = {
             "query": "mutation { sceneUpdate(input: {id: " + str(file_id) + "}){rating100}}",
         }
         response = requests.post(base_url + 'graphql', headers=headers, json=payload)
+        # print("video")
+        # print(response.status_code)
+        # print(response.json()['data']['sceneUpdate'])
         rating100 = response.json()['data']['sceneUpdate']['rating100']
     else:
         payload = {
             "query": "mutation { imageUpdate(input: {id: " + str(file_id) + "}){rating100}}",
         }
         response = requests.post(base_url + 'graphql', headers=headers, json=payload)
+        # print("pic")
+        # print(response.status_code)
+        # print(response.json()['data']['imageUpdate'])
         rating100 = response.json()['data']['imageUpdate']['rating100']
     return rating100
 
@@ -359,7 +366,7 @@ def index():
             if scene_id:
                 scene_url = f"/scene/{scene_id}"
                 scene_link = base_url + f"scenes/{scene_id}"
-                scene_rating = get_file_status(image_id, is_video)
+                scene_rating = get_file_status(scene_id, is_video)
                 all_urls.append((scene_url, scene_link, is_video, scene_id, scene_rating))
     else:
         files_ids = get_favorite_files(offset, per_page)
