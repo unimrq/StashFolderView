@@ -277,13 +277,16 @@ def update_file_like_status():
     file_id = data['file_id']
     rating = data['rating']
     is_video = data['is_video']
+    # print(is_video)
     # print(rating)
 
-    if not bool(is_video):
+    if is_video == "True":
+        # print("OK")
         payload = {
             "query": "mutation { sceneUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
         }
     else:
+        # print("NOT")
         payload = {
             "query": "mutation { imageUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
         }
@@ -349,7 +352,6 @@ def index():
             if image_id:
                 image_url = f"/image/{image_id}"
                 image_link = base_url + f"images/{image_id}"
-                # image_title, image_rating = get_image_status(image_id)
                 image_rating = get_file_status(image_id, is_video)
                 # print(image_title, image_rating)
                 all_urls.append((image_url, image_link, is_video, image_id, image_rating))
@@ -357,9 +359,7 @@ def index():
             if scene_id:
                 scene_url = f"/scene/{scene_id}"
                 scene_link = base_url + f"scenes/{scene_id}"
-                # scene_title, scene_rating = get_scene_status(scene_id)
                 scene_rating = get_file_status(image_id, is_video)
-
                 all_urls.append((scene_url, scene_link, is_video, scene_id, scene_rating))
     else:
         files_ids = get_favorite_files(offset, per_page)
