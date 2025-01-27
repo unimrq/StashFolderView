@@ -328,12 +328,12 @@ def index():
         all_urls = []
         for file_id in file_ids:
             image_id, scene_id, is_video = get_image_and_scene_ids(file_id)
-            # print(image_id, scene_id, is_video)
+            print(image_id, scene_id, is_video)
             if image_id:
                 image_url = f"/image/{image_id}"
                 image_link = base_url + f"images/{image_id}"
                 image_title, image_rating = get_image_status(image_id)
-                # print(image_title, image_rating)
+                print(image_title, image_rating)
                 all_urls.append((image_url, image_link, is_video, image_id, image_rating))
 
             if scene_id:
