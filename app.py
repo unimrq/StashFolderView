@@ -252,6 +252,23 @@ def get_favorite_files(offset, per_page):
     return [file_id[0] for file_id in images_id], [file_id[0] for file_id in scenes_id]
 
 
+def get_file_status(file_id, is_video):
+    if bool(is_video):
+        payload = {
+            "query": "mutation { sceneUpdate(input: {id: " + str(file_id) + "}){rating100}}",
+        }
+        response = requests.post(base_url + 'graphql', headers=headers, json=payload)
+        rating100 = response.json()['data']['sceneUpdate']['rating100']
+    else:
+        payload = {
+            "query": "mutation { imageUpdate(input: {id: " + str(file_id) + "}){rating100}}",
+        }
+        response = requests.post(base_url + 'graphql', headers=headers, json=payload)
+        rating100 = response.json()['data']['imageUpdate']['rating100']
+    return rating100
+
+
+
 @app.route('/update_file_like_status', methods=['POST'])
 def update_file_like_status():
     # 获取JSON数据
@@ -328,18 +345,21 @@ def index():
         all_urls = []
         for file_id in file_ids:
             image_id, scene_id, is_video = get_image_and_scene_ids(file_id)
-            print(image_id, scene_id, is_video)
+            # print(image_id, scene_id, is_video)
             if image_id:
                 image_url = f"/image/{image_id}"
                 image_link = base_url + f"images/{image_id}"
-                image_title, image_rating = get_image_status(image_id)
-                print(image_title, image_rating)
+                # image_title, image_rating = get_image_status(image_id)
+                image_rating = get_file_status(image_id, is_video)
+                # print(image_title, image_rating)
                 all_urls.append((image_url, image_link, is_video, image_id, image_rating))
 
             if scene_id:
                 scene_url = f"/scene/{scene_id}"
                 scene_link = base_url + f"scenes/{scene_id}"
-                scene_title, scene_rating = get_scene_status(scene_id)
+                # scene_title, scene_rating = get_scene_status(scene_id)
+                scene_rating = get_file_status(image_id, is_video)
+
                 all_urls.append((scene_url, scene_link, is_video, scene_id, scene_rating))
     else:
         files_ids = get_favorite_files(offset, per_page)
@@ -347,12 +367,14 @@ def index():
         for image_id in files_ids[0]:
             image_url = f"/image/{image_id}"
             image_link = base_url + f"images/{image_id}"
-            image_title, image_rating = get_image_status(image_id)
+            # image_title, image_rating = get_image_status(image_id)
+            image_rating = get_file_status(image_id, False)
             all_urls.append((image_url, image_link, False, image_id, image_rating))
         for scene_id in files_ids[1]:
             scene_url = f"/scene/{scene_id}"
             scene_link = base_url + f"scenes/{scene_id}"
             scene_title, scene_rating = get_scene_status(scene_id)
+            scene_rating = get_file_status(scene_id, True)
             all_urls.append((scene_url, scene_link, True, scene_id, scene_rating))
 
     if len(all_urls) == 0:
