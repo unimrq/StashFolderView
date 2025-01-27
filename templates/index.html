@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stash-Folder-View</title>
+    <link rel="shortcut icon" href="/static/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        a {
+            text-decoration: none; /* 去掉下划线 */
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            background-color: #ffff;
+            color: black;
+            padding: 10px 10px;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .delete-btn i {
+            font-size: 24px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .delete-btn i:hover {
+            color: darkred; /* 鼠标悬停时显示暗红色 */
+        }
+
+        /* 退出按钮样式 */
+        .logout-btn {
+            cursor: pointer;
+            margin-left: 10px; /* 控制两个按钮之间的间距 */
+            {#margin-bottom: 10px;#}
+            font-size: 24px; /* 调整图标大小 */
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* 图标大小和颜色 */
+        .logout-btn i {
+            color: gray; /* 默认颜色 */
+            transition: color 0.3s ease;
+        }
+
+        /* 悬停时的颜色变化 */
+        .logout-btn:hover i {
+            color: red; /* 悬停时变红 */
+        }
+
+
+        .like-btn,
+        .check-btn {
+            margin-left: 10px; /* 控制两个按钮之间的间距 */
+            cursor: pointer; /* 鼠标悬停时显示可点击 */
+        }
+
+        .like-btn i,
+        .check-btn i {
+            font-size: 24px; /* 设置图标的大小 */
+        }
+
+        .toolbar .menu-btn {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .toolbar .title {
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            flex-grow: 1;
+            transition: margin-left 0.3s ease; /* 增加过渡效果 */
+        }
+
+        /* 左侧：文件夹结构 */
+        .folders-container {
+            width: 20%;
+            margin-top: 50px;
+            padding-right: 10px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            max-height: calc(100vh - 50px);
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .folders-container h2 {
+            margin-top: 0;
+        }
+
+        .breadcrumb {
+            margin: 10px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .breadcrumb span {
+            margin: 0 5px;
+        }
+
+        .files-container {
+            width: 80%;
+            max-height: calc(100vh - 50px);
+            overflow-y: auto;
+            margin-top: 50px;
+            display: flex; /* 使用 flexbox 来确保内容居中 */
+            flex-wrap: wrap; /* 保证内容换行 */
+            justify-content: center; /* 水平方向居中 */
+        }
+
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            max-height: 100vh;
+            justify-content: center; /* 确保图片项在父容器内居中 */
+            gap: 10px;
+        }
+
+        .grid-item {
+            width: 200px; /* 固定宽度 */
+            margin-bottom: 5px; /* 控制垂直间距 */
+            position: relative;
+            overflow: hidden; /* 防止溢出 */
+        }
+
+        .grid-item img {
+            width: 100%; /* 宽度始终填满容器 */
+            height: auto; /* 高度根据宽度自动计算 */
+            object-fit: cover; /* 保持图片比例，裁切不合适的部分 */
+        }
+
+        /* 去除目录列表的小圆点 */
+        .folders-container ul {
+            padding-left: 0; /* 移除默认的内边距 */
+            margin: 0;
+        }
+
+        .folders-container li {
+            list-style-type: none; /* 去掉默认的小圆点 */
+            margin: 5px 0 0 10px;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: white;
+            display: none; /* 默认不显示 */
+        }
+
+        .grid-item.video .play-icon {
+            display: block; /* 如果是视频则显示播放图标 */
+        }
+
+        .no-media-message {
+            font-size: 20px;
+            color: #888;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .pagination {
+            display: none; /* 默认隐藏分页 */
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pagination button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .pagination button:disabled {
+            cursor: not-allowed;
+            background-color: #ddd;
+        }
+
+        /* 针对移动端屏幕的样式 */
+        @media (max-width: 768px) {
+            .grid-item {
+                width: 180px; /* 固定宽度 */
+            }
+
+            .folders-container {
+                width: 0;
+            }
+
+            .files-container {
+                width: 100%;
+            }
+
+            .play-icon {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 20px;
+                color: white;
+                display: none; /* 默认不显示 */
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部工具栏 -->
+<div class="toolbar">
+    <span class="menu-btn" id="menu-btn">&#9776; 菜单</span>
+    <div class="icon-btn">
+        <span id="like-icon-{{ folder_id }}" class="like-btn"
+              onclick="toggleLike({{ folder_id }})">
+            <i id="heart-icon-{{ folder_id }}"
+               class="{% if folder_details[folder_id].like_status == 1 %}fas fa-heart{% else %}far fa-heart{% endif %}"
+               style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}gray{% endif %};"></i>
+        </span>
+        <!-- 删除图标 (垃圾桶形状) -->
+        <span id="delete-icon-{{ folder_id }}" class="delete-btn" onclick="toggleDelete({{ folder_id }})">
+            <i id="delete-icon-{{ folder_id }}-icon"
+               class="fa fa-trash" datatype="{{ folder_details[folder_id].delete_status }}"
+               style="color: {% if folder_details[folder_id].delete_status == 1 %}red{% else %}gray{% endif %};"></i>
+        </span>
+        <!-- 对勾图标 -->
+        <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
+                <i id="check-icon-{{ folder_id }}-icon"
+                   class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
+                   style="color: {% if folder_details[folder_id].read_status == 1 %}green{% else %}gray{% endif %};"></i>
+        </span>
+        <!-- 退出图标 -->
+        <span id="logout-icon" class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> <!-- 只显示图标 -->
+        </span>
+    </div>
+
+</div>
+
+<div class="container">
+    <!-- 左侧：文件夹结构 -->
+    <div id="folder_has_medias" data-folder-id="{{ folder_has_medias }}"></div>
+    <div id="folder_id" data-folder-id="{{ folder_id }}"></div>
+    <div id="parent_folder_id" data-folder-id="{{ parent_folder_id }}"></div>
+    <div id="page" data-folder-id="{{ page }}"></div>
+    <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
+    <div class="folders-container" id="folders-container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index', id=None) }}">根目录</a>
+            {% for path_part, part_folder_id in current_path_parts %}
+                <span>&gt;</span>
+                <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
+            {% endfor %}
+        </div>
+        <hr>
+        <ul>
+            {% for folder in root_folders %}
+                {% set folder_read = folder_details[folder.folder_id].read_status %}
+                {% set folder_like = folder_details[folder.folder_id].like_status %}
+                {% set folder_delete = folder_details[folder.folder_id].delete_status %}
+                <li id="{{ folder.folder_id }}" class="folder">
+                    <a href="{{ url_for('index', id=folder.folder_id) }}">
+                        <span style="color: {% if folder_like == 1 %} red {% elif folder_read == 1 %} gray  {% else %} #007BFF {% endif %};
+                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">{{ folder.relative_path }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- 右侧：文件内容展示 -->
+    <div class="files-container" id="files-container">
+
+        {% if all_urls %}
+            <div class="grid-container" id="masonry-grid">
+                {% for url, link, is_video in all_urls %}
+                    <div class="grid-item {% if is_video %}video{% endif %}">
+                        <a href="{{ link }}" target="_blank">
+                            <img src="{{ url }}" alt="图片"/>
+                        </a>
+                        {% if is_video %}
+                            <div class="play-icon">&#9654;</div> <!-- 播放图标 -->
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-media-message">无媒体文件</div>
+        {% endif %}
+        <!-- 圆形按钮 -->
+        <button id="actionButton" class="floating-btn"></button>
+
+        <!-- 长按弹出菜单 -->
+        <div id="floating-btn-menu" class="floating-btn-menu">
+            <button id="goPrevious" class="menu-item">上一页</button>
+            <button id="goNext" class="menu-item">下一页</button>
+            <button id="goParentFolder" class="menu-item">父目录</button>
+            <button id="goTop" class="menu-item">返回顶部</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@4.1.4/imagesloaded.pkgd.min.js"></script>
+<script src="{{ url_for('static', filename='js/read.js') }}"></script>
+<script src="{{ url_for('static', filename='js/like.js') }}"></script>
+<script src="{{ url_for('static', filename='js/delete.js') }}"></script>
+<script src="{{ url_for('static', filename='js/floating-btn-menu.js') }}"></script>
+<script>
+    function logout() {
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin' // 保证请求时带上当前的 session 信息
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/'; // 重定向到登录页面
+            } else {
+                alert('退出失败，请稍后再试');
+            }
+        })
+        .catch(error => {
+            console.error('退出时发生错误:', error);
+            alert('退出失败，请稍后再试');
+        });
+    }
+
+    // 菜单按钮点击事件：切换目录栏的显示与隐藏
+    const menuBtn = document.getElementById('menu-btn');
+    const foldersContainer = document.getElementById('folders-container');
+    const filesContainer = document.getElementById('files-container');
+    let isHide = localStorage.getItem('isHide');
+    isHide = false
+    const isMobile = window.innerWidth <= 768;
+    const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
+
+
+    if (isMobile) {
+        if (isHide) {
+            filesContainer.style.width = '100%';  // 设置宽度为100%
+            foldersContainer.style.width = '0%'
+            foldersContainer.style.paddingRight = '0'
+            foldersContainer.style.overflowY = 'hidden'
+        } else {
+            filesContainer.style.width = '0%';   // 恢复为原来的宽度
+            foldersContainer.style.width = '100%'
+            foldersContainer.style.paddingRight = '10px'
+            foldersContainer.style.overflowY = 'auto'
+            if (folder_has_medias === 'True') {
+                filesContainer.style.width = '100%';  // 设置宽度为100%
+                foldersContainer.style.width = '0%'
+                foldersContainer.style.paddingRight = '0'
+                foldersContainer.style.overflowY = 'hidden'
+                isHide = !isHide
+                localStorage.setItem('isHide', isHide);
+            }
+        }
+    } else {
+        if (isHide) {
+            filesContainer.style.width = '100%';  // 设置宽度为100%
+            foldersContainer.style.width = '0%'
+            foldersContainer.style.paddingRight = '0'
+            foldersContainer.style.overflowY = 'hidden'
+        } else {
+            filesContainer.style.width = '80%';   // 恢复为原来的宽度
+            foldersContainer.style.width = '20%'
+            foldersContainer.style.paddingRight = '10px'
+            foldersContainer.style.overflowY = 'auto'
+        }
+    }
+
+    menuBtn.addEventListener('click', function () {
+        {#foldersContainer.classList.toggle('hidden');  // 切换 hidden 类来显示/隐藏目录#}
+        isHide = !isHide
+        localStorage.setItem('isHide', isHide);
+
+        if (isMobile) {
+            if (isHide) {
+                filesContainer.style.width = '100%';  // 设置宽度为100%
+                foldersContainer.style.width = '0%'
+                foldersContainer.style.paddingRight = '0'
+                foldersContainer.style.overflowY = 'hidden'
+            } else {
+                filesContainer.style.width = '0%';   // 恢复为原来的宽度
+                foldersContainer.style.width = '100%'
+                foldersContainer.style.paddingRight = '10px'
+                foldersContainer.style.overflowY = 'auto'
+            }
+        } else {
+            if (isHide) {
+                filesContainer.style.width = '100%';  // 设置宽度为100%
+                foldersContainer.style.width = '0%'
+                foldersContainer.style.paddingRight = '0'
+                foldersContainer.style.overflowY = 'hidden'
+            } else {
+                filesContainer.style.width = '80%';   // 恢复为原来的宽度
+                foldersContainer.style.width = '20%'
+                foldersContainer.style.paddingRight = '10px'
+                foldersContainer.style.overflowY = 'auto'
+            }
+        }
+    });
+</script>
+<script>
+    const grid = document.querySelector('#masonry-grid');
+    // 初始化 Masonry
+    const masonryInstance = new Masonry(grid, {
+        itemSelector: '.grid-item',  // 每个项目
+        columnWidth: '.grid-item',    // 每列的宽度
+        percentPosition: true,       // 使宽度为百分比
+        gutter: 10,                  // 每个项目之间的间距
+        fitWidth: true,              // 容器宽度自适应
+        isResizable: true,           // 响应式调整
+        horizontalOrder: true,       // 使 Masonry 容器按水平方向顺序排列
+    });
+
+    // 监听每个图片的加载事件
+    const images = document.querySelectorAll('.grid-item img');
+    images.forEach(function (img) {
+        img.addEventListener('load', function () {
+            // 图片加载完成后，显示相应的播放图标
+            var parentItem = img.closest('.grid-item');
+            if (parentItem.classList.contains('video')) {
+                parentItem.querySelector('.play-icon').style.display = 'block';
+            }
+            // 图片加载完成后，触发 Masonry 布局
+            masonryInstance.layout();  // 重新计算 Masonry 布局
+        });
+    });
+
+    // 使用 imagesLoaded 插件监听图片加载完成
+    imagesLoaded(grid, function() {
+        masonryInstance.layout();
+    });
+
+
+</script>
+<script defer>
+
+    localStorage.setItem('previous_page', folder_id);
+    if ((folder_id !== localStorage.getItem('previous_page')) || !folder_has_medias){
+
+        localStorage.setItem('scrollPosition', 0);
+
+    }
+
+    // 监听页面滚动事件，保存滚动位置
+    foldersContainer.addEventListener('scroll', function() {
+        console.log("scroll")
+        localStorage.setItem('scrollPosition', foldersContainer.scrollTop);
+
+    });
+
+    // 页面加载完成后恢复滚动位置
+    window.addEventListener('load', function() {
+        const savedScrollPosition = localStorage.getItem('scrollPosition');
+        if (savedScrollPosition !== null) {
+            foldersContainer.scrollTo(0, savedScrollPosition);
+        }
+    });
+
+</script>
+</body>
+</html>

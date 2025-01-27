@@ -1,0 +1,100 @@
+/* 设置页面背景 */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: url('/static/images/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 登录容器 */
+.login-container {
+  background-color: rgba(255, 255, 255, 0.8); /* 半透明背景 */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px); /* 背景模糊效果 */
+}
+
+/* 标题样式 */
+h2 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* 输入框样式 */
+.input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+/* 标签样式 */
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* 输入框样式 */
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* 输入框聚焦效果 */
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+/* 按钮样式 */
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* 错误信息 */
+#error-message {
+  margin-top: 15px;
+  font-size: 14px;
+  color: red;
+  display: none;
+  text-align: center;
+}
+@media (max-width: 768px) {
+    .login-container {
+      width: 100%;
+      max-width: 250px;
+    }
+    h2 {
+      font-size: 24px;
+  }
+}

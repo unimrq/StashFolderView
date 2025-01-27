@@ -1,0 +1,106 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+}
+
+.floating-btn {
+    width: 60px;  /* 设置按钮的大小 */
+    height: 60px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border-radius: 50%;  /* 让按钮变成圆形 */
+    background-color: #3f72af;  /* 设置按钮背景颜色为灰色 */
+    border: none;  /* 移除默认边框 */
+    position: fixed;  /* 固定按钮在页面右下角 */
+    bottom: 20px;  /* 离底部20px */
+    right: 20px;  /* 离右边20px */
+    cursor: pointer;
+    outline: none;
+}
+
+/* 三角形样式 */
+.floating-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid white;  /* 设置三角形的颜色为白色 */
+    transform: translate(-50%, -50%) rotate(180deg);  /* 将三角形居中并旋转 */
+}
+
+
+.floating-btn-menu {
+    position: fixed;
+    bottom: 110px;  /* 默认显示在按钮上方 */
+    right: 40px;
+    background-color: #3f72af;
+    border-radius: 8px;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100px;  /* 菜单宽度 */
+}
+
+.menu-item {
+    padding: 10px;
+    border: none;
+    color: white;
+    background-color: transparent;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background-color: #112d4e;
+    border-radius: 8px;
+    color: white;
+}
+
+@media (max-width: 768px){
+
+    /* 圆形按钮样式 */
+    .floating-btn {
+        width: 50px;  /* 设置按钮的大小 */
+        height: 50px;
+        margin-right: 15px;
+        margin-bottom: 15px;
+        bottom: 15px;  /* 离底部15px */
+        right: 15px;  /* 离右边15px */
+    }
+
+    /* 三角形样式 */
+    .floating-btn::before {
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid white;  /* 设置三角形的颜色为白色 */
+        transform: translate(-50%, -50%) rotate(180deg);  /* 将三角形居中并旋转 */
+    }
+
+    /* 菜单样式 */
+    .floating-btn-menu {
+        position: fixed;
+        bottom: 90px;  /* 默认显示在按钮上方 */
+        right: 30px;
+        width: 70px;  /* 菜单宽度 */
+        font-size: 14px;  /* 适应移动端的小字号 */
+    }
+
+    /* 菜单项样式 */
+    .menu-item {
+        padding: 8px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+}
