@@ -1,4 +1,3 @@
-stash的文件夹浏览界面实现
 # 预览
 ![img.png](static/images/img.png)
 # 特性
