@@ -21,8 +21,8 @@
 
         /* 顶部工具栏 */
         .toolbar {
-            background-color: #ffff;
-            color: black;
+            background-color: #5a79ba;
+            color: white;
             padding: 10px 10px;
             width: 100%;
             height: 50px;
@@ -78,13 +78,15 @@
             font-size: 24px; /* 设置图标的大小 */
         }
 
-        .toolbar .menu-btn {
-            font-size: 20px;
+        .toolbar {
+            font-size: 16px;
             cursor: pointer;
         }
 
-        .toolbar .title {
-            font-size: 18px;
+        .menu-btn {
+            font-size: 20px;
+            margin-left: 20px;
+            cursor: pointer;
         }
 
         .container {
@@ -97,12 +99,13 @@
         .folders-container {
             width: 20%;
             margin-top: 50px;
-            padding-right: 10px;
+            background: #fafafa;
             overflow-y: auto;
             box-sizing: border-box;
             max-height: calc(100vh - 50px);
-            height: 100%;
+            height: 100vh;
             transition: transform 0.3s ease;
+            border-right: 1px solid #ccc; /* 右侧边框 */
         }
 
         .folders-container h2 {
@@ -110,24 +113,45 @@
         }
 
         .breadcrumb {
-            margin: 10px;
-            font-size: 14px;
+            margin-left: 30px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            font-size: 16px;
         }
 
         .breadcrumb a {
             text-decoration: none;
-            color: #007bff;
+            color: #007BFF;
         }
 
         .breadcrumb span {
             margin: 0 5px;
         }
 
+        hr {
+            border: 1px solid #ccc; /* 设置边框为 1px 宽，颜色为 #ccc */
+            margin: 0; /* 去除默认的上下外边距 */
+            height: 0; /* 高度设为 0，确保它是单一的水平线 */
+        }
+
+        .folder-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .folder-bar span {
+            font-size: 16px;
+        }
+
         .files-container {
             width: 80%;
-            max-height: calc(100vh - 50px);
+            max-height: calc(100vh - 70px);
             overflow-y: auto;
-            margin-top: 50px;
+            margin-top: 70px;
             display: flex; /* 使用 flexbox 来确保内容居中 */
             flex-wrap: wrap; /* 保证内容换行 */
             justify-content: center; /* 水平方向居中 */
@@ -187,24 +211,6 @@
             margin-top: 50px;
         }
 
-        .pagination {
-            display: none; /* 默认隐藏分页 */
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
-        .pagination button {
-            padding: 5px 10px;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        .pagination button:disabled {
-            cursor: not-allowed;
-            background-color: #ddd;
-        }
-
         /* 针对移动端屏幕的样式 */
         @media (max-width: 768px) {
             .grid-item {
@@ -217,6 +223,10 @@
 
             .files-container {
                 width: 100%;
+            }
+
+            .menu-btn {
+                margin-left: 0;
             }
 
             .play-icon {
@@ -240,23 +250,23 @@
               onclick="toggleLike({{ folder_id }})">
             <i id="heart-icon-{{ folder_id }}"
                class="{% if folder_details[folder_id].like_status == 1 %}fas fa-heart{% else %}far fa-heart{% endif %}"
-               style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}gray{% endif %};"></i>
+               style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}white{% endif %};"></i>
         </span>
         <!-- 删除图标 (垃圾桶形状) -->
         <span id="delete-icon-{{ folder_id }}" class="delete-btn" onclick="toggleDelete({{ folder_id }})">
             <i id="delete-icon-{{ folder_id }}-icon"
                class="fa fa-trash" datatype="{{ folder_details[folder_id].delete_status }}"
-               style="color: {% if folder_details[folder_id].delete_status == 1 %}red{% else %}gray{% endif %};"></i>
+               style="color: {% if folder_details[folder_id].delete_status == 1 %}black{% else %}white{% endif %};"></i>
         </span>
         <!-- 对勾图标 -->
         <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
                 <i id="check-icon-{{ folder_id }}-icon"
                    class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
-                   style="color: {% if folder_details[folder_id].read_status == 1 %}green{% else %}gray{% endif %};"></i>
+                   style="color: {% if folder_details[folder_id].read_status == 1 %}#7c7575{% else %}white{% endif %};"></i>
         </span>
         <!-- 退出图标 -->
         <span id="logout-icon" class="logout-btn" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> <!-- 只显示图标 -->
+            <i class="fas fa-sign-out-alt" style="color:white"></i> <!-- 只显示图标 -->
         </span>
     </div>
 
@@ -271,11 +281,11 @@
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
     <div class="folders-container" id="folders-container">
         <div class="breadcrumb">
-            <a href="{{ url_for('index', id=None) }}">根目录</a>
-            {% for path_part, part_folder_id in current_path_parts %}
-                <span>&gt;</span>
-                <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
-            {% endfor %}
+                <a href="{{ url_for('index', id=None) }}">根目录</a>
+                {% for path_part, part_folder_id in current_path_parts %}
+                    <span>&gt;</span>
+                    <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
+                {% endfor %}
         </div>
         <hr>
         <ul>
@@ -285,8 +295,10 @@
                 {% set folder_delete = folder_details[folder.folder_id].delete_status %}
                 <li id="{{ folder.folder_id }}" class="folder">
                     <a href="{{ url_for('index', id=folder.folder_id) }}">
-                        <span style="color: {% if folder_like == 1 %} red {% elif folder_read == 1 %} gray  {% else %} #007BFF {% endif %};
-                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">{{ folder.relative_path }}</span>
+                        <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                            {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
+                        <span style="color: {% if folder_read == 0 %} #007BFF {% else %} black {% endif %};">{{ folder.relative_path }}</span>
+                </div>
                     </a>
                 </li>
             {% endfor %}
@@ -367,17 +379,14 @@
         if (isHide) {
             filesContainer.style.width = '100%';  // 设置宽度为100%
             foldersContainer.style.width = '0%'
-            foldersContainer.style.paddingRight = '0'
             foldersContainer.style.overflowY = 'hidden'
         } else {
             filesContainer.style.width = '0%';   // 恢复为原来的宽度
             foldersContainer.style.width = '100%'
-            foldersContainer.style.paddingRight = '10px'
             foldersContainer.style.overflowY = 'auto'
             if (folder_has_medias === 'True') {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.paddingRight = '0'
                 foldersContainer.style.overflowY = 'hidden'
                 isHide = !isHide
                 localStorage.setItem('isHide', isHide);
@@ -387,12 +396,10 @@
         if (isHide) {
             filesContainer.style.width = '100%';  // 设置宽度为100%
             foldersContainer.style.width = '0%'
-            foldersContainer.style.paddingRight = '0'
             foldersContainer.style.overflowY = 'hidden'
         } else {
             filesContainer.style.width = '80%';   // 恢复为原来的宽度
             foldersContainer.style.width = '20%'
-            foldersContainer.style.paddingRight = '10px'
             foldersContainer.style.overflowY = 'auto'
         }
     }
@@ -406,24 +413,20 @@
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.paddingRight = '0'
                 foldersContainer.style.overflowY = 'hidden'
             } else {
                 filesContainer.style.width = '0%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '100%'
-                foldersContainer.style.paddingRight = '10px'
                 foldersContainer.style.overflowY = 'auto'
             }
         } else {
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                foldersContainer.style.paddingRight = '0'
                 foldersContainer.style.overflowY = 'hidden'
             } else {
                 filesContainer.style.width = '80%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '20%'
-                foldersContainer.style.paddingRight = '10px'
                 foldersContainer.style.overflowY = 'auto'
             }
         }

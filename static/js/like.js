@@ -10,7 +10,7 @@ function toggleLike(folderId) {
         // 切换到未点赞状态
         icon.classList.remove('fas', 'fa-heart');  // 移除已点赞图标
         icon.classList.add('far', 'fa-heart');     // 添加未点赞图标
-        icon.style.color = 'gray';                  // 设置为灰色
+        icon.style.color = 'white';                  // 设置为灰色
         // 更新数据库状态为未点赞
         updateLikeStatus(folderId, 0);
     } else {

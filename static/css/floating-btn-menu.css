@@ -10,7 +10,7 @@ body {
     margin-right: 20px;
     margin-bottom: 20px;
     border-radius: 50%;  /* 让按钮变成圆形 */
-    background-color: #3f72af;  /* 设置按钮背景颜色为灰色 */
+    background-color: #5a79ba;  /* 设置按钮背景颜色为灰色 */
     border: none;  /* 移除默认边框 */
     position: fixed;  /* 固定按钮在页面右下角 */
     bottom: 20px;  /* 离底部20px */

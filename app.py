@@ -223,6 +223,17 @@ def logout():
     return redirect(url_for('home'))  # 重定向到登录页面
 
 
+def get_favorite_files(offset, per_page):
+    conn = sqlite3.connect('stash-go.sqlite')
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM images WHERE rating >= 80 ORDER BY RANDOM()  LIMIT ? OFFSET ?", (per_page, offset))
+    images_id = cursor.fetchall()
+    cursor.execute("SELECT id FROM scenes WHERE rating >= 80 ORDER BY RANDOM()  LIMIT ? OFFSET ?", (per_page, offset))
+    scenes_id = cursor.fetchall()
+    conn.close()
+    return [file_id[0] for file_id in images_id], [file_id[0] for file_id in scenes_id]
+
+
 @app.route('/folders', methods=['GET'])
 def index():
     if not check_login():
@@ -265,21 +276,32 @@ def index():
             break
 
     # 获取该文件夹下的所有文件ID（分页）
-    file_ids = get_file_ids_from_folder(folder_id, offset, per_page)
+    if parent_folder_id is not None:
+        file_ids = get_file_ids_from_folder(folder_id, offset, per_page)
+        all_urls = []
+        for file_id in file_ids:
+            image_id, scene_id, is_video = get_image_and_scene_ids(file_id)
 
-    all_urls = []
-    for file_id in file_ids:
-        image_id, scene_id, is_video = get_image_and_scene_ids(file_id)
+            if image_id:
+                image_url = f"/image/{image_id}"
+                image_link = base_url + f"images/{image_id}"
+                all_urls.append((image_url, image_link, is_video))
 
-        if image_id:
+            if scene_id:
+                scene_url = f"/scene/{scene_id}"
+                scene_link = base_url + f"scenes/{scene_id}"
+                all_urls.append((scene_url, scene_link, is_video))
+    else:
+        files_ids = get_favorite_files(offset, per_page)
+        all_urls = []
+        for image_id in files_ids[0]:
             image_url = f"/image/{image_id}"
             image_link = base_url + f"images/{image_id}"
-            all_urls.append((image_url, image_link, is_video))
-
-        if scene_id:
+            all_urls.append((image_url, image_link, 0))
+        for scene_id in files_ids[1]:
             scene_url = f"/scene/{scene_id}"
             scene_link = base_url + f"scenes/{scene_id}"
-            all_urls.append((scene_url, scene_link, is_video))
+            all_urls.append((scene_url, scene_link, 1))
 
     if len(all_urls) == 0:
         folder_has_medias = False
@@ -295,21 +317,22 @@ def index():
     CREATE TABLE IF NOT EXISTS folders (
         folder_id INTEGER PRIMARY KEY,
         read_status INTEGER CHECK (read_status IN (0, 1)),
-        like_status INTEGER CHECK (like_status IN (0, 1))
+        like_status INTEGER CHECK (like_status IN (0, 1)),
+        delete_status INTEGER CHECK (delete_status IN (0, 1))
     )
     ''')
 
-    cursor.execute("PRAGMA table_info(folders)")
-    columns = [column[1] for column in cursor.fetchall()]
-
-    if 'delete_status' not in columns:
-        cursor.execute('''
-            ALTER TABLE folders
-            ADD COLUMN delete_status INTEGER CHECK (delete_status IN (0, 1)) DEFAULT 0
-            ''')
-        print("Column 'delete_status' added.")
-    else:
-        print("Column 'delete_status' already exists.")
+    # cursor.execute("PRAGMA table_info(folders)")
+    # columns = [column[1] for column in cursor.fetchall()]
+    #
+    # if 'delete_status' not in columns:
+    #     cursor.execute('''
+    #         ALTER TABLE folders
+    #         ADD COLUMN delete_status INTEGER CHECK (delete_status IN (0, 1)) DEFAULT 0
+    #         ''')
+    #     print("Column 'delete_status' added.")
+    # else:
+    #     print("Column 'delete_status' already exists.")
 
     # 处理 root_folders 中的每个文件夹
     for folder in root_folders:
