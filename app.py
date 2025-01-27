@@ -13,6 +13,7 @@ base_url = os.environ.get('base_url')
 username = os.environ.get('username')
 password = os.environ.get('password')
 api_key = os.environ.get('api_key')
+app.config['SESSION_COOKIE_NAME'] = 'stash-folder-view'
 logged = False
 
 # 配置SQLite数据库
