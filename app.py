@@ -260,8 +260,9 @@ def update_file_like_status():
     file_id = data['file_id']
     rating = data['rating']
     is_video = data['is_video']
+    # print(rating)
 
-    if bool(is_video):
+    if not bool(is_video):
         payload = {
             "query": "mutation { sceneUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
         }
@@ -322,7 +323,7 @@ def index():
             break
 
     # 获取该文件夹下的所有文件ID（分页）
-    if parent_folder_id is not None:
+    if folder_id is not None:
         file_ids = get_file_ids_from_folder(folder_id, offset, per_page)
         all_urls = []
         for file_id in file_ids:
