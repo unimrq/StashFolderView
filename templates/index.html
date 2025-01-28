@@ -540,36 +540,6 @@
     const isMobile = window.innerWidth <= 768;
     const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
 
-
-    if (isMobile) {
-        if (isHide) {
-            filesContainer.style.width = '100%';  // 设置宽度为100%
-            foldersContainer.style.width = '0%'
-            breadcrumb.style.display = 'none'
-
-            {#folders_draw.style.overflowY = 'hidden'#}
-        } else {
-            filesContainer.style.width = '0%';   // 恢复为原来的宽度
-            foldersContainer.style.width = '100%'
-            breadcrumb.style.display = 'block'
-            foldersContainer.style.display = 'block'
-            {#folders_draw.style.overflowY = 'auto'#}
-        }
-    } else {
-        if (isHide) {
-            filesContainer.style.width = '100%';  // 设置宽度为100%
-            foldersContainer.style.width = '0%'
-            breadcrumb.style.display = 'none'
-            {#folders_draw.style.overflowY = 'hidden'#}
-        } else {
-            filesContainer.style.width = '80%';   // 恢复为原来的宽度
-            foldersContainer.style.width = '20%'
-            breadcrumb.style.display = 'block'
-            foldersContainer.style.display = 'block'
-            {#folders_draw.style.overflowY = 'auto'#}
-        }
-    }
-
     menuBtn.addEventListener('click', function () {
         {#foldersContainer.classList.toggle('hidden');  // 切换 hidden 类来显示/隐藏目录#}
         isHide = !isHide
