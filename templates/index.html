@@ -281,9 +281,10 @@
             display: flex;
             flex-direction: column;  /* 图标和文件名垂直排列 */
             align-items: center;  /* 水平居中 */
-            justify-content: center;  /* 垂直居中 */
-            width: 150px;  /* 固定宽度 */
-            height: 150px;  /* 固定高度 */
+            {#justify-content: center;  /* 垂直居中 */#}
+            width: 100px;  /* 固定宽度 */
+
+            {#height: 150px;  /* 固定高度 */#}
             text-align: center;
             border-radius: 8px;  /* 可选：圆角 */
         }
@@ -303,7 +304,7 @@
             overflow: hidden;  /* 隐藏溢出的部分 */
             text-overflow: ellipsis;  /* 显示省略号 */
             width: 100px;
-            height: 90px;
+            max-height: 80px;
             font-size: 14px;
             color: #333;
             margin-top: 5px;
@@ -533,7 +534,7 @@
     const folders_draw= document.getElementById('folders_draw');
     const breadcrumb= document.getElementById('breadcrumb');
     let isHide = localStorage.getItem('isHide');
-    isHide = false
+    isHide = true
     const isMobile = window.innerWidth <= 768;
     const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
 
@@ -549,14 +550,6 @@
             foldersContainer.style.width = '100%'
             breadcrumb.style.display = 'block'
             {#folders_draw.style.overflowY = 'auto'#}
-            if (folder_has_medias === 'True') {
-                filesContainer.style.width = '100%';  // 设置宽度为100%
-                foldersContainer.style.width = '0%'
-                breadcrumb.style.display = 'none'
-                {#folders_draw.style.overflowY = 'hidden'#}
-                isHide = !isHide
-                localStorage.setItem('isHide', isHide);
-            }
         }
     } else {
         if (isHide) {
