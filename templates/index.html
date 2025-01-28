@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stash-Folder-View</title>
     <link rel="shortcut icon" href="/static/images/favicon.ico">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">#}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
     <link rel="stylesheet" href="/static/css/image_heart.css">
     <style>
@@ -75,10 +77,11 @@
         }
 
         .home-btn{
-            font-size: 20px;
-            margin-left: 20px;
+            font-size: 22px;
+            margin-left: 10px;
             cursor: pointer;
         }
+
 
         .like-btn i,
         .check-btn i {
@@ -91,9 +94,15 @@
         }
 
         .menu-btn {
-            font-size: 20px;
-            margin-left: 10px;
+            font-size: 26px;
+            margin-left: 20px;
             cursor: pointer;
+        }
+        .menu-btn i {
+            {#font-size: 28px;#}
+            {#margin-left: 20px;#}
+            {#cursor: pointer;#}
+            transform: translateY(2px); /* 向下移动图标 */
         }
 
         .container {
@@ -104,6 +113,7 @@
 
         /* 左侧：文件夹结构 */
         .folders-container {
+            display: flex;
             width: 20%;
             margin-top: 50px;
             background: #fafafa;
@@ -112,12 +122,13 @@
             height: 100vh;
             transition: transform 0.3s ease;
             border-right: 1px solid #ccc; /* 右侧边框 */
+            flex-direction: column;
         }
 
         .folders_draw {
             overflow-y: auto;
             flex-grow: 1;  /* 占满剩余空间 */
-
+            max-height: calc(100vh - 50px);
         }
 
         .folders-container h2 {
@@ -139,12 +150,6 @@
 
         .breadcrumb span {
             margin: 0 5px;
-        }
-
-        hr {
-            border: 1px solid #ccc; /* 设置边框为 1px 宽，颜色为 #ccc */
-            margin: 0; /* 去除默认的上下外边距 */
-            height: 0; /* 高度设为 0，确保它是单一的水平线 */
         }
 
         .folder-bar {
@@ -223,10 +228,7 @@
             text-align: center;
             margin-top: 50px;
         }
-        span, a {
-            margin: 0;
-            padding: 0;
-        }
+
 
         /* 针对移动端屏幕的样式 */
         @media (max-width: 768px) {
@@ -262,8 +264,7 @@
 <!-- 顶部工具栏 -->
 <div class="toolbar">
     <div>
-
-        <span class="menu-btn" id="menu-btn">&#9776; 菜单</span>
+        <span class="menu-btn" id="menu-btn"><i class="fa-solid fa-bars"></i></span>
         <!-- 新增主页按钮 -->
         <a href="{{ url_for('index') }}" id="home-icon" class="home-btn">
             <i class="fas fa-home" style="color:white"></i> <!-- 白色房子图标 -->
@@ -359,15 +360,7 @@
             <div class="no-media-message">无媒体文件</div>
         {% endif %}
         <!-- 圆形按钮 -->
-        <button id="actionButton" class="floating-btn"></button>
-
-        <!-- 长按弹出菜单 -->
-        <div id="floating-btn-menu" class="floating-btn-menu">
-            <button id="goPrevious" class="menu-item">上一页</button>
-            <button id="goNext" class="menu-item">下一页</button>
-            <button id="goParentFolder" class="menu-item">父目录</button>
-            <button id="goTop" class="menu-item">返回顶部</button>
-        </div>
+        <button id="actionButton" class="floating-btn"><i class="fa-solid fa-play"></i></button>
 
     </div>
 
@@ -521,9 +514,9 @@
     }
 
     // 监听页面滚动事件，保存滚动位置
-    foldersContainer.addEventListener('scroll', function() {
+    folders_draw.addEventListener('scroll', function() {
         console.log("scroll")
-        localStorage.setItem('scrollPosition', foldersContainer.scrollTop);
+        localStorage.setItem('scrollPosition', folders_draw.scrollTop);
 
     });
 
@@ -531,7 +524,7 @@
     window.addEventListener('load', function() {
         const savedScrollPosition = localStorage.getItem('scrollPosition');
         if (savedScrollPosition !== null) {
-            foldersContainer.scrollTo(0, savedScrollPosition);
+            folders_draw.scrollTo(0, savedScrollPosition);
         }
     });
 

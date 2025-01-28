@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import timedelta, datetime, timezone
-
+import stash_query
 import requests
 import os
 from flask import Flask, render_template, request, Response, jsonify, session, redirect, url_for
@@ -28,88 +28,6 @@ headers = {
 }
 # 初始化SQLAlchemy
 db = SQLAlchemy(app)
-
-
-# 获取某个目录的子目录
-def get_folders_from_db(folder_id=None):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-
-    if folder_id is None:
-        cursor.execute("SELECT id, path, parent_folder_id FROM folders WHERE parent_folder_id IS NULL")
-    else:
-        cursor.execute("SELECT id, path, parent_folder_id FROM folders WHERE parent_folder_id = ?", (folder_id,))
-
-    rows = cursor.fetchall()
-    conn.close()
-
-    folders = []
-    for row in rows:
-        folder_id, folder_path, parent_folder_id = row
-        folders.append({
-            'folder_id': folder_id,
-            'folder_path': folder_path,
-            'parent_folder_id': parent_folder_id,
-            'relative_path': folder_path.split('/')[-1]
-        })
-
-    return folders
-
-
-# 根据parent_folder_id获取该文件夹下的所有文件id
-def get_file_ids_from_folder(folder_id, offset=0, limit=50):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM files WHERE parent_folder_id = ? LIMIT ? OFFSET ?", (folder_id, limit, offset))
-    file_ids = cursor.fetchall()
-    conn.close()
-    return [file_id[0] for file_id in file_ids]
-
-
-# 获取某个文件夹是否有子文件夹
-def has_subfolders(folder_id):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM folders WHERE parent_folder_id = ?", (folder_id,))
-    subfolder_count = cursor.fetchone()[0]
-    conn.close()
-    return subfolder_count > 0
-
-
-# 根据文件id获取image_id和scene_id
-def get_image_and_scene_ids(file_id):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT image_id FROM images_files WHERE file_id = ?", (file_id,))
-    image_id = cursor.fetchone()
-
-    cursor.execute("SELECT scene_id FROM scenes_files WHERE file_id = ?", (file_id,))
-    scene_id = cursor.fetchone()
-
-    conn.close()
-
-    # 判断文件是否为视频：只要有scene_id就认为是视频
-    is_video = bool(scene_id)
-
-    return image_id[0] if image_id else None, scene_id[0] if scene_id else None, is_video
-
-
-def get_image_status(image_id):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT title, rating FROM images WHERE id = ?", (image_id,))
-    image_status = cursor.fetchone()
-    conn.close()
-    return image_status[0], image_status[1]
-
-
-def get_scene_status(scene_id):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT title, rating FROM scenes WHERE id = ?", (scene_id,))
-    scene_status = cursor.fetchone()
-    conn.close()
-    return scene_status[0], scene_status[1]
 
 
 @app.route('/image/<path:image_id>')
@@ -241,41 +159,6 @@ def logout():
     return redirect(url_for('home'))  # 重定向到登录页面
 
 
-def get_favorite_files(offset, per_page):
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM images WHERE rating >= 80 ORDER BY RANDOM()  LIMIT ? OFFSET ?", (per_page, offset))
-    images_id = cursor.fetchall()
-    cursor.execute("SELECT id FROM scenes WHERE rating >= 80 ORDER BY RANDOM()  LIMIT ? OFFSET ?", (per_page, offset))
-    scenes_id = cursor.fetchall()
-    conn.close()
-    return [file_id[0] for file_id in images_id], [file_id[0] for file_id in scenes_id]
-
-
-def get_file_status(file_id, is_video):
-    print(is_video)
-    if is_video:
-        payload = {
-            "query": "mutation { sceneUpdate(input: {id: " + str(file_id) + "}){rating100}}",
-        }
-        response = requests.post(base_url + 'graphql', headers=headers, json=payload)
-        # print("video")
-        # print(response.status_code)
-        # print(response.json()['data']['sceneUpdate'])
-        rating100 = response.json()['data']['sceneUpdate']['rating100']
-    else:
-        payload = {
-            "query": "mutation { imageUpdate(input: {id: " + str(file_id) + "}){rating100}}",
-        }
-        response = requests.post(base_url + 'graphql', headers=headers, json=payload)
-        # print("pic")
-        # print(response.status_code)
-        # print(response.json()['data']['imageUpdate'])
-        rating100 = response.json()['data']['imageUpdate']['rating100']
-    return rating100
-
-
-
 @app.route('/update_file_like_status', methods=['POST'])
 def update_file_like_status():
     # 获取JSON数据
@@ -310,79 +193,82 @@ def update_file_like_status():
 
 @app.route('/folders', methods=['GET'])
 def index():
+    # 处理登录逻辑
     if not check_login():
         return redirect(url_for('home'))
-
+    # 本页面参数
     folder_id = request.args.get('id', type=int)
     page = request.args.get('page', default=1, type=int)  # 当前页，默认第一页
-    per_page = 50  # 每页显示的文件数量
+    per_page = 50
     offset = (page - 1) * per_page  # 计算偏移量
 
     # 判断文件夹是否有子文件夹
-    folder_has_subfolders = has_subfolders(folder_id)
-
-    # 获取父目录的路径
+    # folder_has_subfolders = has_subfolders(folder_id)
     parent_folder_id = None
+
+    # 查询父文件夹以及本文件夹路径
     if folder_id:
-        cursor = sqlite3.connect('stash-go.sqlite').cursor()
-        cursor.execute("SELECT parent_folder_id FROM folders WHERE id = ?", (folder_id,))
-        parent_folder_id = cursor.fetchone()[0]
+        folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
+        # 查询子文件夹
+        subdirectories = stash_query.find_subdirectory_by_id(folder_id)
+        folder_has_subfolders = False if len(subdirectories) == 0 else True
     else:
         folder_has_subfolders = True
 
+    # 跳过最后一层目录
     if folder_has_subfolders:
-        # 获取文件夹结构
-        root_folders = get_folders_from_db(folder_id)
+        root_folders = stash_query.find_subdirectory_by_id(folder_id)
     else:
-        root_folders = get_folders_from_db(parent_folder_id)
+        root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
 
     # 获取当前路径的各个部分
     current_path_parts = []
     current_folder_id = folder_id
     while current_folder_id:
-        cursor = sqlite3.connect('stash-go.sqlite').cursor()
-        cursor.execute("SELECT path, parent_folder_id FROM folders WHERE id = ?", (current_folder_id,))
-        folder = cursor.fetchone()
-        if folder:
-            current_path_parts.insert(0, (folder[0], current_folder_id))
-            current_folder_id = folder[1]
+        folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
+
+        if parent_folder_id:
+            current_path_parts.insert(0, (folder_path, current_folder_id))
+            current_folder_id = parent_folder_id
         else:
             break
 
     # 获取该文件夹下的所有文件ID（分页）
-    if folder_id is not None:
-        file_ids = get_file_ids_from_folder(folder_id, offset, per_page)
+    if folder_id:
+        file_ids = stash_query.find_file_id_by_folder_id(folder_id, per_page, offset)
         all_urls = []
         for file_id in file_ids:
-            image_id, scene_id, is_video = get_image_and_scene_ids(file_id)
-            # print(image_id, scene_id, is_video)
-            if image_id:
-                image_url = f"/image/{image_id}"
-                image_link = base_url + f"images/{image_id}"
-                image_rating = get_file_status(image_id, is_video)
-                # print(image_title, image_rating)
-                all_urls.append((image_url, image_link, is_video, image_id, image_rating))
+            content_id, is_video = stash_query.find_image_id_or_scene_id_by_file_id(file_id)
 
-            if scene_id:
-                scene_url = f"/scene/{scene_id}"
-                scene_link = base_url + f"scenes/{scene_id}"
-                scene_rating = get_file_status(scene_id, is_video)
-                all_urls.append((scene_url, scene_link, is_video, scene_id, scene_rating))
+            if not is_video:
+                image_url = f"/image/{content_id}"
+                image_link = base_url + f"images/{content_id}"
+                image_rating = stash_query.get_file_status(content_id, is_video)
+                all_urls.append((image_url, image_link, is_video, content_id, image_rating))
+            else:
+                scene_url = f"/scene/{content_id}"
+                scene_link = base_url + f"scenes/{content_id}"
+                scene_rating = stash_query.get_file_status(content_id, is_video)
+                all_urls.append((scene_url, scene_link, is_video, content_id, scene_rating))
+
+        total_files = stash_query.find_file_num_by_folder_id(folder_id)
+
     else:
-        files_ids = get_favorite_files(offset, per_page)
+        files_ids = stash_query.get_favorite_files(per_page, offset)
+        total_files = stash_query.get_favorite_num()
         all_urls = []
+        for scene_id in files_ids[1]:
+            scene_url = f"/scene/{scene_id}"
+            scene_link = base_url + f"scenes/{scene_id}"
+            # scene_title, scene_rating = get_scene_status(scene_id)
+            scene_rating = stash_query.get_file_status(scene_id, True)
+            all_urls.append((scene_url, scene_link, True, scene_id, scene_rating))
         for image_id in files_ids[0]:
             image_url = f"/image/{image_id}"
             image_link = base_url + f"images/{image_id}"
             # image_title, image_rating = get_image_status(image_id)
-            image_rating = get_file_status(image_id, False)
+            image_rating = stash_query.get_file_status(image_id, False)
             all_urls.append((image_url, image_link, False, image_id, image_rating))
-        for scene_id in files_ids[1]:
-            scene_url = f"/scene/{scene_id}"
-            scene_link = base_url + f"scenes/{scene_id}"
-            scene_title, scene_rating = get_scene_status(scene_id)
-            scene_rating = get_file_status(scene_id, True)
-            all_urls.append((scene_url, scene_link, True, scene_id, scene_rating))
 
     if len(all_urls) == 0:
         folder_has_medias = False
@@ -457,13 +343,6 @@ def index():
     conn1.commit()
     conn1.close()
 
-    # 获取总的文件数量，用于计算总页数
-    conn = sqlite3.connect('stash-go.sqlite')
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM files WHERE parent_folder_id = ?", (folder_id,))
-    total_files = cursor.fetchone()[0]
-    conn.close()
-
     total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
 
     return render_template('index.html', root_folders=root_folders,
@@ -477,4 +356,4 @@ def index():
 
 # 启动Flask应用
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, threaded=True)

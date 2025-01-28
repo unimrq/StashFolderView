@@ -4,7 +4,6 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
-VOLUME ["/app/stash-go.sqlite"]
 
 # 启动 Flask 应用
 CMD ["python", "app.py"]
