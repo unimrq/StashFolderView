@@ -267,11 +267,13 @@
         }
 
         .folders_view {
+            width: 100% ;
             display: flex;
             {#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust column size based on screen width */#}
             gap: 20px;  /* Space between items */
             padding: 20px;
             flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         /* Folder icon styling */
@@ -284,8 +286,6 @@
             height: 150px;  /* 固定高度 */
             text-align: center;
             border-radius: 8px;  /* 可选：圆角 */
-
-
         }
 
         .folder-icon i {
@@ -309,6 +309,16 @@
             margin-top: 5px;
             line-height: 1.2;  /* 设置行高，避免文字过紧 */
 
+        }
+
+        .highlighted {
+            background-color: #4CAF50; /* Change this color as needed */
+            border-radius: 8px;
+        }
+
+        .page-btn.disabled {
+            color: #ccc;
+            pointer-events: none;
         }
 
 
@@ -401,12 +411,12 @@
                     {% set folder_read = folder_details[folder.folder_id].read_status %}
                     {% set folder_like = folder_details[folder.folder_id].like_status %}
                     {% set folder_delete = folder_details[folder.folder_id].delete_status %}
-                    <li id="{{ folder.folder_id }}" class="folder">
+                    <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}">
                         <a href="{{ url_for('index', id=folder.folder_id) }}">
                             <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
                                 {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
                             <span style="color: {% if folder_read == 0 %} #007BFF {% else %} black {% endif %};">{{ folder.relative_path }}</span>
-                    </div>
+                            </div>
                         </a>
                     </li>
                 {% endfor %}
@@ -440,12 +450,14 @@
                     {% endfor %}
                 </div>
                 <!-- 翻页按钮 -->
-                <div class="pagination">
-                    <a id="prevPage" class="page-btn" href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
-                    <span class="current-page">当前页：{{ page }}</span> <!-- 显示当前页数 -->
-                    <span class="current-page">总页数：{{ total_pages }}</span> <!-- 显示当前页数 -->
-                    <a id="nextPage" class="page-btn" href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
-                </div>
+                {% if total_pages > 1 %}
+                    <div class="pagination" id="pagination">
+                        <a id="prevPage" class="page-btn {% if page == 1 %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
+                        <span class="current-page">当前页：{{ page }}</span> <!-- 显示当前页数 -->
+                        <span class="current-page">总页数：{{ total_pages }}</span> <!-- 显示总页数 -->
+                        <a id="nextPage" class="page-btn {% if page == total_pages %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
+                    </div>
+                {% endif %}
             </div>
         {% else %}
             {% if folder_has_subfolders %}
@@ -487,6 +499,15 @@
 <script src="{{ url_for('static', filename='js/floating-btn-menu.js') }}"></script>
 <script src="/static/js/image_heart.js"></script>
 <script>
+    if (folder_id) {
+        // 获取对应的元素
+        var element = document.getElementById(folder_id);
+        if (element) {
+            // 滚动到该元素
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
     function logout() {
         fetch('/logout', {
             method: 'GET',
@@ -617,29 +638,6 @@
 
 </script>
 <script defer>
-
-    localStorage.setItem('previous_page', folder_id);
-
-    if ((folder_id !== localStorage.getItem('previous_page')) || !folder_has_medias){
-
-        localStorage.setItem('scrollPosition', 0);
-
-    }
-
-    // 监听页面滚动事件，保存滚动位置
-    folders_draw.addEventListener('scroll', function() {
-        {#console.log("scroll")#}
-        localStorage.setItem('scrollPosition', folders_draw.scrollTop);
-
-    });
-
-    // 页面加载完成后恢复滚动位置
-    window.addEventListener('load', function() {
-        const savedScrollPosition = localStorage.getItem('scrollPosition');
-        if (savedScrollPosition !== null) {
-            folders_draw.scrollTo(0, savedScrollPosition);
-        }
-    });
 
     {#const go_folderId = document.getElementById('folder-icon').getAttribute('data-folder-id');#}
     function goToFolder(folder_id) {
