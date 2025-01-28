@@ -266,6 +266,51 @@
             margin-top: 50px;
         }
 
+        .folders_view {
+            display: flex;
+            {#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust column size based on screen width */#}
+            gap: 20px;  /* Space between items */
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Folder icon styling */
+        .folder-icon {
+            display: flex;
+            flex-direction: column;  /* 图标和文件名垂直排列 */
+            align-items: center;  /* 水平居中 */
+            justify-content: center;  /* 垂直居中 */
+            width: 150px;  /* 固定宽度 */
+            height: 150px;  /* 固定高度 */
+            text-align: center;
+            border-radius: 8px;  /* 可选：圆角 */
+
+
+        }
+
+        .folder-icon i {
+            font-size: 3rem;  /* Enlarged folder icon */
+            color: #4CAF50;   /* Green folder color */
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;  /* 可选：平滑的悬停效果 */
+        }
+
+        .folder-icon span {
+            display: -webkit-box;  /* 使用弹性盒子模型 */
+            -webkit-box-orient: vertical;  /* 垂直排列 */
+            -webkit-line-clamp: 4;
+            overflow: hidden;  /* 隐藏溢出的部分 */
+            text-overflow: ellipsis;  /* 显示省略号 */
+            width: 100px;
+            height: 90px;
+            font-size: 14px;
+            color: #333;
+            margin-top: 5px;
+            line-height: 1.2;  /* 设置行高，避免文字过紧 */
+
+        }
+
 
         /* 针对移动端屏幕的样式 */
         @media (max-width: 768px) {
@@ -403,7 +448,28 @@
                 </div>
             </div>
         {% else %}
-            <div class="no-media-message">无媒体文件</div>
+            {% if folder_has_subfolders %}
+                <div class="folders_view">
+                    <!-- 上一级文件夹图标 -->
+                    <div>
+                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ parent_folder_id }}" ondblclick="goToFolder({{ parent_folder_id if parent_folder_id is not none else 'null' }})" >
+                            <i class="fas fa-folder"></i> <!-- 向上箭头图标 -->
+                            <span>上一级</span>
+                        </a>
+                    </div>
+
+                    <!-- 子文件夹图标 -->
+                    {% for folder in root_folders %}
+                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}" ondblclick="goToFolder({{ folder.folder_id }})" >
+                            <i class="fas fa-folder" ></i> <!-- 文件夹图标 -->
+                            <span>{{ folder.relative_path | truncate(25) }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-media-message">无媒体文件</div>
+            {% endif %}
+
         {% endif %}
         <!-- 圆形按钮 -->
         <button id="actionButton" class="floating-btn"><i class="fa-solid fa-play"></i></button>
@@ -574,6 +640,17 @@
             folders_draw.scrollTo(0, savedScrollPosition);
         }
     });
+
+    {#const go_folderId = document.getElementById('folder-icon').getAttribute('data-folder-id');#}
+    function goToFolder(folder_id) {
+        if (folder_id === null) {
+            window.location.href = "{{ url_for('index') }}";  // 根据需要修改路径
+        } else {
+            // 跳转到文件夹的链接
+            window.location.href = "{{ url_for('index') }}?id=" + folder_id;  // 根据需要修改路径
+        }
+
+    }
 
 </script>
 </body>

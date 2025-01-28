@@ -225,13 +225,15 @@ def index():
     current_folder_id = folder_id
     while current_folder_id:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
-        # print(folder_path)
         if parent_folder_id:
             current_path_parts.insert(0, (folder_path, current_folder_id))
             current_folder_id = parent_folder_id
         else:
             current_path_parts.insert(0, (folder_path, current_folder_id))
             break
+    if folder_id:
+        parent_folder_id = stash_query.find_directory_by_id(folder_id)[1]
+    # print(parent_folder_id)
     # print(current_path_parts)
 
     # 获取该文件夹下的所有文件ID（分页）
@@ -345,6 +347,7 @@ def index():
     conn1.close()
 
     total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
+    # print(parent_folder_id)
 
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
