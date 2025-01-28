@@ -94,7 +94,6 @@ def update_read_status():
     # 返回成功响应
     return jsonify({'success': True})
 
-
 @app.route('/update_delete_status', methods=['POST'])
 def update_delete_status():
     data = request.get_json()
@@ -254,7 +253,7 @@ def index():
         total_files = stash_query.find_file_num_by_folder_id(folder_id)
 
     else:
-        files_ids = stash_query.get_favorite_files(per_page, offset)
+        files_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset/2))
         total_files = stash_query.get_favorite_num()
         all_urls = []
         for scene_id in files_ids[1]:
