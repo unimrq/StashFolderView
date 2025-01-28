@@ -15,3 +15,6 @@ docker run --restart=always -v /app/data:/app/data -e base_url=[stash url] -e us
 3. 收藏文件及文件夹在首页显示；完成
 4. 登录功能完善；
 5. 文件夹图标列表功能；完成
+6. 左侧自动定位并高亮显示当前文件夹；
+# BUG
+1. 翻页功能逻辑不完善
