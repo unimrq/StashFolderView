@@ -170,18 +170,54 @@
             max-height: calc(100vh - 70px);
             overflow-y: auto;
             margin-top: 70px;
+            {#flex-direction: inherit;#}
             display: flex; /* 使用 flexbox 来确保内容居中 */
             flex-wrap: wrap; /* 保证内容换行 */
             justify-content: center; /* 水平方向居中 */
         }
 
         .grid-container {
-            display: flex;
+            width: 100%;
+            {#display: flex;#}
             flex-wrap: wrap;
             max-height: 100vh;
-            justify-content: center; /* 确保图片项在父容器内居中 */
+            {#justify-content: center; /* 确保图片项在父容器内居中 */#}
             gap: 10px;
+            {#flex-direction: column;#}
         }
+
+        .image-box{
+            display: flex;
+            {#flex-grow: 1;#}
+            justify-self: center;
+
+        }
+
+        .pagination {
+            {#flex-grow: 1;#}
+            margin-top: auto; /* 推到父容器底部 */
+            text-align: center;
+            padding: 10px;
+            {#width: auto;#}
+            {#background-color: #f0f0f0; /* 背景颜色，可选 */#}
+        }
+        .page-btn {
+            padding-top: 20px;
+            margin: 0 20px;
+            background-color: transparent;  /* 去除按钮背景颜色 */
+            border: none; /* 去除按钮边框 */
+            color: blue; /* 按钮文字颜色设置为蓝色 */
+            font-size: 22px; /* 可以根据需求调整按钮文字大小 */
+            cursor: pointer; /* 鼠标悬停时变为指针 */
+
+        }
+
+        .current-page {
+            font-size: 22px;
+            color: #4CAF50;
+            margin: 0 10px;
+        }
+
 
         .grid-item {
             {#display: flex;#}
@@ -189,6 +225,7 @@
             margin-bottom: 5px; /* 控制垂直间距 */
             position: relative;
             overflow: hidden; /* 防止溢出 */
+            flex: 1;
         }
 
         .grid-item img {
@@ -336,8 +373,9 @@
     <div class="files-container" id="files-container">
 
         {% if all_urls %}
-            <div class="grid-container" id="masonry-grid">
-                {% for url, link, is_video, file_id, file_like in all_urls %}
+            <div class="grid-container">
+                <div class="image-box" id="masonry-grid">
+                    {% for url, link, is_video, file_id, file_like in all_urls %}
                     <div class="grid-item {% if is_video %}video{% endif %}">
                         <a href="{{ link }}" target="_blank">
                             <img src="{{ url }}" alt="图片"/>
@@ -354,7 +392,15 @@
                             {% endif %}
                         </div>
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <!-- 翻页按钮 -->
+                <div class="pagination">
+                    <a id="prevPage" class="page-btn" href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
+                    <span class="current-page">当前页：{{ page }}</span> <!-- 显示当前页数 -->
+                    <span class="current-page">总页数：{{ total_pages }}</span> <!-- 显示当前页数 -->
+                    <a id="nextPage" class="page-btn" href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
+                </div>
             </div>
         {% else %}
             <div class="no-media-message">无媒体文件</div>
@@ -507,6 +553,7 @@
 <script defer>
 
     localStorage.setItem('previous_page', folder_id);
+
     if ((folder_id !== localStorage.getItem('previous_page')) || !folder_has_medias){
 
         localStorage.setItem('scrollPosition', 0);
@@ -515,7 +562,7 @@
 
     // 监听页面滚动事件，保存滚动位置
     folders_draw.addEventListener('scroll', function() {
-        console.log("scroll")
+        {#console.log("scroll")#}
         localStorage.setItem('scrollPosition', folders_draw.scrollTop);
 
     });

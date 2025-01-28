@@ -140,8 +140,8 @@ def find_subdirectory_by_id(folder_id=None):
                     """
         }
     response = requests.post(api_url, headers=headers, json=json)
-    print(response.text)
-    print(response.status_code)
+    # print(response.text)
+    # print(response.status_code)
 
     if response.status_code == 200:
         folders = []
@@ -247,8 +247,8 @@ def get_file_status(file_id, is_video):
         }
         response = requests.post(api_url, headers=headers, json=payload)
         # print("video")
-        print(response.status_code)
-        print(response.text)
+        # print(response.status_code)
+        # print(response.text)
         rating100 = response.json()['data']['findScene']['rating100']
     else:
         payload = {
@@ -257,8 +257,8 @@ def get_file_status(file_id, is_video):
         }
         response = requests.post(api_url, headers=headers, json=payload)
         # print("pic")
-        print(response.status_code)
-        print(response.text)
+        # print(response.status_code)
+        # print(response.text)
         rating100 = response.json()['data']['findImage']['rating100']
     return rating100
 

@@ -225,12 +225,14 @@ def index():
     current_folder_id = folder_id
     while current_folder_id:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
-
+        # print(folder_path)
         if parent_folder_id:
             current_path_parts.insert(0, (folder_path, current_folder_id))
             current_folder_id = parent_folder_id
         else:
+            current_path_parts.insert(0, (folder_path, current_folder_id))
             break
+    # print(current_path_parts)
 
     # 获取该文件夹下的所有文件ID（分页）
     if folder_id:
