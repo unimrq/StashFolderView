@@ -54,14 +54,14 @@
 }
 
 .home-btn{
-    font-size: 22px;
+    font-size: 24px;
     margin-left: 10px;
     cursor: pointer;
 }
 
 .network-btn{
-    font-size: 20px;
-    margin-left: 10px;
+    font-size: 24px;
+    margin-left: 8px;
     cursor: pointer;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .menu-btn {
-    font-size: 26px;
+    font-size: 30px;
     margin-left: 20px;
     cursor: pointer;
 }
@@ -92,7 +92,7 @@
 
 @media (max-width: 600px) {
     .folders_name{
-        width: 100px;
+        display: none;
 
     }
 }
