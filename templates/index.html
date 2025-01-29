@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>stash相册</title>
+    <title>Stash相册</title>
     <link rel="shortcut icon" href="/static/images/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
@@ -62,7 +62,7 @@
         <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
                 <i id="check-icon-{{ folder_id }}-icon"
                    class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
-                   style="color: {% if folder_details[folder_id].read_status == 1 %}#7c7575{% else %}white{% endif %};"></i>
+                   style="color: {% if folder_details[folder_id].read_status == 1 %}lightgreen{% else %}white{% endif %};"></i>
         </span>
         <!-- 退出图标 -->
         <span id="logout-icon" class="logout-btn" onclick="logout()">
@@ -104,7 +104,7 @@
                             <div class="folder-bar"
                                  style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #ff6464 {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} green {% endif %};">{{ folder.relative_path }}</span>
+                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} lightgreen {% endif %};">{{ folder.relative_path }}</span>
                             </div>
                         </a>
                     </li>
