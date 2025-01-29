@@ -6,9 +6,9 @@ const myContainer = document.getElementById('files-container');
 
 
 if(parseInt(total_pages) > 1 && parseInt(page) < parseInt(total_pages)){
-        actionButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+        actionButton.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
     } else {
-        actionButton.innerHTML = '<i class="fa-solid fa-location-arrow"></i>';
+        actionButton.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
     }
 
 actionButton.onclick = () => {

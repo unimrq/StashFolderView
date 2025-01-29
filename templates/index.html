@@ -102,7 +102,7 @@
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
                         <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
                             <div class="folder-bar"
-                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
                                 <span style="color: {% if folder_read == 0 %} black {% else %} gray {% endif %};">{{ folder.relative_path }}</span>
                             </div>
@@ -166,7 +166,7 @@
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}
                         <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
-                           ondblclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
+                           onClick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
                             <i class="fas fa-folder"></i> <!-- 文件夹图标 -->
                             <span>{{ folder.relative_path | truncate(25) }}</span>
                         </a>
@@ -186,7 +186,7 @@
 
         {% endif %}
         <!-- 圆形按钮 -->
-        <button id="actionButton" class="floating-btn"><i class="fa-solid fa-play"></i></button>
+        <button id="actionButton" class="floating-btn"><i class="fa-solid fa-arrow-right"></i></button>
     </div>
 
 </div>

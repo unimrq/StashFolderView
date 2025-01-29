@@ -10,9 +10,9 @@
     transition: transform 0.3s ease;
     border-right: 1px solid #ccc; /* 右侧边框 */
     flex-direction: column;
-    background: #B0BEDE;
+    background: #dbe2ef;
     overflow-y: auto;
-    scrollbar-color: #697EBF #B0BEDE;
+    scrollbar-color: #697EBF #dbe2ef;
 
 }
 ::-webkit-scrollbar-track {
@@ -33,12 +33,20 @@
     justify-content: space-between;
     padding: 10px 20px 10px 20px;
     margin: 5px 0;
+    /*font-size: 14px;*/
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡效果 */
+
+}
+
+.folder-bar:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 悬停时阴影效果 */
+
 }
 
 .folder-bar span {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 /* 去除目录列表的小圆点 */
@@ -53,9 +61,9 @@
 }
 
 .folders_view {
-    width: 100% ;
+    width: calc(100% - 30px);
     display: flex;
-    /*{#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); !* Adjust column size based on screen width *!#}*/
+    /*grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); !* Adjust column size based on screen width *!*/
     gap: 20px;  /* Space between items */
     padding-left: 20px;
     /*{#padding-right: 50px;#}*/
@@ -79,7 +87,7 @@
 
 .folder-icon i {
     font-size: 3rem;  /* Enlarged folder icon */
-    color: #5a79ba;   /* Green folder color */
+    color: #7098da;   /* Green folder color */
     margin-bottom: 10px;
     cursor: pointer;
     transition: transform 0.2s ease;  /* 可选：平滑的悬停效果 */
@@ -94,9 +102,9 @@
     width: 100px;
     max-height: 80px;
     font-size: 14px;
-    color: #333;
+    color: black;
     margin-top: 5px;
-    line-height: 1.2;  /* 设置行高，避免文字过紧 */
+    /*line-height: 1.2;  !* 设置行高，避免文字过紧 *!*/
 
 }
 
@@ -105,19 +113,30 @@
     margin-top: 10px;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
+    flex-direction: row;
+    align-items: start;
+    gap: 20px;
+    /*padding: 10px;*/
     border-radius: 8px;
-    margin-left: 15px;
+    margin-left: 28px;
+    font-size: 14px;
     /*{#margin: 20px 0;#}*/
 }
 
+@media (max-width: 1100px) {
+    .folder_control {
+        flex-direction: column; /* 窗口宽度小于600px时，变成横向排列 */
+        gap: 5px; /* 横向排列时的间距 */
+    }
+}
+
 /* 控制复选框的大小和样式 */
-.control-label input[type="checkbox"] {
+.folder_control_label input[type="checkbox"] {
     margin-right: 3px;
-    width: 18px;
-    height: 18px;
+    /*margin-top: 15px;*/
+    /*width: 18px;*/
+    /*height: 18px;*/
+    transform: translateY(2px);
     accent-color: #4CAF50; /* 设置复选框的颜色 */
 }
 
