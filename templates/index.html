@@ -104,7 +104,7 @@
                             <div class="folder-bar"
                                  style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #ff6464 {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} lightgreen {% endif %};">{{ folder.relative_path }}</span>
+                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} darkgreen {% endif %};">{{ folder.relative_path }}</span>
                             </div>
                         </a>
                     </li>
