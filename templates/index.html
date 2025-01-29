@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stash-Folder-View</title>
+    <title>stash相册</title>
     <link rel="shortcut icon" href="/static/images/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
@@ -43,7 +43,7 @@
         </a>
     </div>
 
-    <span>{{ folder_name | truncate(25) }}</span>
+    <span class="folders_name">{{ folder_name }}</span>
 
     <div class="icon-btn">
         <span id="like-icon-{{ folder_id }}" class="like-btn"
@@ -102,9 +102,9 @@
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
                         <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
                             <div class="folder-bar"
-                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% else %} transparent {% endif %};
+                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #ff6464 {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                                <span style="color: {% if folder_read == 0 %} black {% else %} gray {% endif %};">{{ folder.relative_path }}</span>
+                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} green {% endif %};">{{ folder.relative_path }}</span>
                             </div>
                         </a>
                     </li>
@@ -118,7 +118,7 @@
     <div class="files-container" id="files-container">
         {% if all_urls %}
             <div class="breadcrumb" id="breadcrumb">
-                <span>当前路径:</span>
+                当前路径：
                 <a href="{{ url_for('index', id=None) }}">根目录</a>
                 {% for path_part, part_folder_id in current_path_parts %}
                     <span>/</span>

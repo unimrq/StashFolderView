@@ -6,7 +6,6 @@ let isHide = localStorage.getItem('isHide');
 const isMobile = window.innerWidth <= 768;
 isHide = isMobile;
 
-const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
 
 menuBtn.addEventListener('click', function () {
     // {#foldersContainer.classList.toggle('hidden');  // 切换 hidden 类来显示/隐藏目录#}

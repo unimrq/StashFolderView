@@ -76,3 +76,18 @@
     /*{#cursor: pointer;#}*/
     transform: translateY(2px); /* 向下移动图标 */
 }
+.folders_name{
+    justify-self: center;
+    width: 800px;
+    white-space: nowrap;
+    overflow: hidden;  /* 隐藏溢出的部分 */
+    text-overflow: ellipsis;  /* 显示省略号 */
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .folders_name{
+        width: 100px;
+
+    }
+}

@@ -1,3 +1,4 @@
+import hashlib
 import sqlite3
 from datetime import timedelta, datetime, timezone
 from utils import stash_query
@@ -5,7 +6,6 @@ import requests
 import os
 from flask import Flask, render_template, request, Response, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-
 from utils.folder_db_query import folder_status_process
 
 # v3
@@ -23,7 +23,7 @@ if not os.path.exists('data'):
     os.makedirs('data')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///folders.db'  # SQLite数据库文件
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 禁用信号跟踪（提高性能）
-SESSION_TIMEOUT = timedelta(minutes=300)
+SESSION_TIMEOUT = timedelta(days=1)
 headers = {
     'Content-Type': 'application/json',
     'ApiKey': api_key,
@@ -109,24 +109,20 @@ def update_delete_status():
 
     return jsonify({'success': True})
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()  # 获取前端发送的JSON数据
-    usn = data.get('username')
-    pwd = data.get('password')
 
-    # 验证用户名和密码
-    if usn == username and pwd == password:
-        session['logged_in'] = True
-        session['login_time'] = datetime.now(timezone.utc)  # 记录登录时间
-        return jsonify({'success': True})
-    else:
-        return jsonify({'success': False, 'message': 'Invalid username or password'})
+def generate_encrypted_string(username, password):
+    combined_string = username + password
+    encrypted_string = hashlib.sha256(combined_string.encode('utf-8')).hexdigest()  # 使用 SHA-256 加密
+    return encrypted_string
 
 def check_login():
     if 'logged_in' not in session or not session['logged_in']:
         # 如果没有登录，则重定向到登录页面
         return False
+    else:
+        logged_in = session['logged_in']
+        if logged_in != generate_encrypted_string(username, password):
+            return False
 
     # 获取登录时间，并确保它是带时区的时间对象
     login_time = session.get('login_time')
@@ -138,6 +134,21 @@ def check_login():
             session.pop('login_time', None)
             return False
     return True
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()  # 获取前端发送的JSON数据
+    usn = data.get('username')
+    pwd = data.get('password')
+    hashed = generate_encrypted_string(usn, pwd)
+    # 验证用户名和密码
+    if hashed == generate_encrypted_string(username, password):
+        session['logged_in'] = hashed
+        session['login_time'] = datetime.now(timezone.utc)  # 记录登录时间
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'message': 'Invalid username or password'})
+
 
 @app.route('/')
 def home():

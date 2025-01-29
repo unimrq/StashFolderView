@@ -11,11 +11,12 @@
 }
 
 .breadcrumb {
-    margin-left: 20px;
+    margin-left: 30px;
     margin-right: 20px;
     /*{#padding-top: 10px;#}*/
     justify-self: center;
     padding-bottom: 20px;
+    text-align: start;
     font-size: 16px;
     max-height: 70px;
     /*background-color: #333333;*/
@@ -62,7 +63,7 @@
     margin-bottom: 5px; /* 控制垂直间距 */
     position: relative;
     overflow: hidden; /* 防止溢出 */
-    flex: 1;
+    /*flex: 1;*/
 }
 
 .grid-item img {
@@ -75,7 +76,7 @@
     margin: 0 20px;
     background-color: transparent;  /* 去除按钮背景颜色 */
     border: none; /* 去除按钮边框 */
-    color: blue; /* 按钮文字颜色设置为蓝色 */
+    color: #5a79ba; /* 按钮文字颜色设置为蓝色 */
     font-size: 18px; /* 可以根据需求调整按钮文字大小 */
     cursor: pointer; /* 鼠标悬停时变为指针 */
 
