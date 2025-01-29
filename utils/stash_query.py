@@ -1,3 +1,4 @@
+import sqlite3
 import requests
 import os
 
@@ -92,6 +93,14 @@ def find_directory_by_path(path):
 
 
 def find_directory_by_id(folder_id):
+    if folder_id == 0:
+        folder_id = None
+    if folder_id == 1:
+        return "/收藏", None
+    if folder_id == 2:
+        return "/收藏/文件", 1
+    if folder_id == 3:
+        return '/收藏/文件夹', 1
     json = {
         "query": f"""
                 mutation {{
@@ -107,13 +116,47 @@ def find_directory_by_id(folder_id):
     response = requests.post(api_url, headers=headers, json=json)
     # print(response.json())
     if response.status_code == 200:
-        return response.json()['data']['querySQL']['rows'][0]
+        results = response.json()['data']['querySQL']['rows'][0]
+        return [results[0], results[1] if results[1] is not None else 0]
     else:
         return None
 
 
 def find_subdirectory_by_id(folder_id=None):
-    if folder_id is None:
+    if folder_id == 1:
+        folders = [{
+            'folder_id': 2,
+            'folder_path': '/收藏/文件',
+            'parent_folder_id': 1,
+            'relative_path': '文件',
+        }, {
+            'folder_id': 3,
+            'folder_path': '/收藏/文件夹',
+            'parent_folder_id': 1,
+            'relative_path': '文件夹',
+        }]
+        return folders
+    if folder_id == 3:
+        conn1 = sqlite3.connect('data/folders.db')
+        cursor = conn1.cursor()
+        cursor.execute("SELECT folder_id FROM folders WHERE like_status = 1")
+        folder_data = cursor.fetchall()
+        folders = []
+        if folder_data:
+            for folder_id in folder_data:
+                # print("in" + str(folder_id))
+
+                folder_path, parent_folder_id = find_directory_by_id(folder_id[0])
+                folders.append({
+                    'folder_id': folder_id[0],
+                    'folder_path': folder_path,
+                    'parent_folder_id': 3,
+                    'relative_path': folder_path.split('/')[-1],
+                })
+                # print(folders)
+        conn1.close()
+        return folders
+    if folder_id == 0:
         json = {
             "query": f"""
                     mutation {{
@@ -148,6 +191,8 @@ def find_subdirectory_by_id(folder_id=None):
         rows = response.json()['data']['querySQL']['rows']
         for row in rows:
             folder_id, folder_path, parent_folder_id = row
+            if parent_folder_id is None:
+                parent_folder_id = 0
             folders.append({
                 'folder_id': folder_id,
                 'folder_path': folder_path,

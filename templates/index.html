@@ -122,7 +122,7 @@
             height: 100vh;
             transition: transform 0.3s ease;
             border-right: 1px solid #ccc; /* 右侧边框 */
-            {#flex-direction: column;#}
+            flex-direction: column;
             background: #B0BEDE;
             overflow-y: auto;
             scrollbar-color: #697EBF #B0BEDE;
@@ -135,8 +135,8 @@
         .folders-container h2 {
             margin-top: 0;
         }
-        .folders_draw a {
-            color: #cccccc;
+        .folders_draw{
+            width: 100%;
         }
 
         .breadcrumb {
@@ -159,12 +159,14 @@
         }
 
         .folder-bar {
+            {#width: 100%;#}
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 20px;
+            padding: 10px 20px 10px 20px;
             margin: 5px 0;
             border-radius: 5px;
+            cursor: pointer;
         }
 
         .folder-bar span {
@@ -278,11 +280,11 @@
             display: flex;
             {#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust column size based on screen width */#}
             gap: 20px;  /* Space between items */
-            {#padding: 20px;#}
+            padding-left: 20px;
             {#padding-right: 50px;#}
             flex-wrap: wrap;
             {#max-height: 150px;#}
-            justify-content: flex-start;
+            justify-content: start;
         }
 
         /* Folder icon styling */
@@ -319,6 +321,27 @@
             margin-top: 5px;
             line-height: 1.2;  /* 设置行高，避免文字过紧 */
 
+        }
+
+        /* 给 folder_control 添加一些布局样式 */
+        .folder_control {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-left: 15px;
+            {#margin: 20px 0;#}
+        }
+
+        /* 控制复选框的大小和样式 */
+        .control-label input[type="checkbox"] {
+            margin-right: 3px;
+            width: 18px;
+            height: 18px;
+            accent-color: #4CAF50; /* 设置复选框的颜色 */
         }
 
         .highlighted {
@@ -382,6 +405,8 @@
         </a>
     </div>
 
+    <span>{{ folder_name | truncate(25) }}</span>
+
     <div class="icon-btn">
         <span id="like-icon-{{ folder_id }}" class="like-btn"
               onclick="toggleLike({{ folder_id }})">
@@ -417,21 +442,36 @@
     <div id="page" data-folder-id="{{ page }}"></div>
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
     <div class="folders-container" id="folders-container">
-        <ul>
-            {% for folder in root_folders %}
-                {% set folder_read = folder_details[folder.folder_id].read_status %}
-                {% set folder_like = folder_details[folder.folder_id].like_status %}
-                {% set folder_delete = folder_details[folder.folder_id].delete_status %}
-                <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}">
-                    <a href="{{ url_for('index', id=folder.folder_id) }}">
-                        <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
-                            {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                        <span style="color: {% if folder_read == 0 %} #4A3B8C {% else %} black {% endif %};">{{ folder.relative_path }}</span>
-                        </div>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="folder_control">
+            <label class="folder_control_label">
+                <input type="checkbox" id="openInNewWindow" /> 新窗口
+            </label>
+
+            <!-- 收起/展开已读的复选框 -->
+            <label class="folder_control_label">
+                <input type="checkbox" id="toggleRead" /> 收起已读
+            </label>
+        </div>
+        <div class="folders_draw">
+            <ul id="folderList">
+                {% for folder in root_folders %}
+
+                    {% set folder_read = folder_details[folder.folder_id].read_status %}
+                    {% set folder_like = folder_details[folder.folder_id].like_status %}
+                    {% set folder_delete = folder_details[folder.folder_id].delete_status %}
+                    <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}"
+                    data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}" >
+                        <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
+                            <div class="folder-bar" style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
+                            <span style="color: {% if folder_read == 0 %} black {% else %} gray {% endif %};">{{ folder.relative_path }}</span>
+                            </div>
+                        </a>
+                    </li>
+
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 
     <!-- 右侧：文件内容展示 -->
@@ -482,7 +522,7 @@
 
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}
-                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}" ondblclick="goToFolder({{ folder.folder_id }})" >
+                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}" ondblclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})" >
                             <i class="fas fa-folder" ></i> <!-- 文件夹图标 -->
                             <span>{{ folder.relative_path | truncate(25) }}</span>
                         </a>
@@ -633,15 +673,63 @@
 <script defer>
 
     {#const go_folderId = document.getElementById('folder-icon').getAttribute('data-folder-id');#}
-    function goToFolder(folder_id) {
-        if (folder_id === null) {
-            window.location.href = "{{ url_for('index') }}";  // 根据需要修改路径
+    function goToFolder(folder_id, parent_folder_id) {
+        if (parent_folder_id === 3 || document.getElementById('openInNewWindow').checked) {
+            window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
         } else {
-            // 跳转到文件夹的链接
-            window.location.href = "{{ url_for('index') }}?id=" + folder_id;  // 根据需要修改路径
+            window.location.href = "{{ url_for('index') }}?id=" + folder_id;
         }
 
+
     }
+
+    const toggleReadCheckbox = document.getElementById('toggleRead');
+    const newWindowCheckbox = document.getElementById('openInNewWindow');
+    const folderList = document.getElementById('folderList');
+    function updateFolderVisibility() {
+        // 获取所有文件夹项
+        const folders = folderList.getElementsByClassName('folder');
+
+        for (let folder of folders) {
+            const folderRead = folder.getAttribute('data-folder-read');
+            const folderRelativePath = folder.getAttribute('data-folder-relative-path');
+
+            // 判断复选框状态和文件夹的状态
+            if (toggleReadCheckbox.checked === false) {
+                // 如果 check_box 为 0，全部显示
+                folder.style.display = 'block';
+            } else {
+                // 如果 check_box 为 1，且 folder.relative_path != '上一级'，隐藏 folder_read == 1 的项
+                if (folderRelativePath !== '上一级' && folderRead === '1') {
+                    folder.style.display = 'none';
+                } else {
+                    folder.style.display = 'block';
+                }
+            }
+        }
+    }
+
+    // 监听复选框状态变化
+    newWindowCheckbox.addEventListener('change', function (){
+        localStorage.setItem('newWindowCheckbox', newWindowCheckbox.checked);
+    });
+    toggleReadCheckbox.addEventListener('change', function (){
+        updateFolderVisibility();
+        localStorage.setItem('toggleReadState', toggleReadCheckbox.checked);
+
+    });
+
+
+    window.onload = function() {
+        // 检查 localStorage 中是否有已保存的状态
+        const savedState1 = localStorage.getItem('toggleReadState');
+        const savedState2 = localStorage.getItem('newWindowCheckbox');
+        if (savedState1 !== null && savedState2 !== null) {
+            toggleReadCheckbox.checked = (savedState1 === 'true');
+            newWindowCheckbox.checked = (savedState2 === 'true');
+            updateFolderVisibility();
+        }
+    };
 
 </script>
 </body>
