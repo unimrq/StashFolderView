@@ -281,7 +281,7 @@
             {#padding: 20px;#}
             {#padding-right: 50px;#}
             flex-wrap: wrap;
-            max-height: 150px;
+            {#max-height: 150px;#}
             justify-content: flex-start;
         }
 
@@ -479,13 +479,6 @@
         {% else %}
             {% if folder_has_subfolders %}
                 <div class="folders_view">
-                    <!-- 上一级文件夹图标 -->
-                    <div>
-                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ parent_folder_id }}" ondblclick="goToFolder({{ parent_folder_id if parent_folder_id is not none else 'null' }})" >
-                            <i class="fas fa-folder"></i> <!-- 向上箭头图标 -->
-                            <span>上一级</span>
-                        </a>
-                    </div>
 
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}

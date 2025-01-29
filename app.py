@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import timedelta, datetime, timezone
-import stash_query
+from utils import stash_query
 import requests
 import os
 from flask import Flask, render_template, request, Response, jsonify, session, redirect, url_for
@@ -44,7 +44,6 @@ async def get_image(image_id):
     else:
         return "Failed to retrieve images", 404
 
-
 @app.route('/scene/<path:scene_id>')
 async def get_scene(scene_id):
     # 图片的外部URL
@@ -58,7 +57,6 @@ async def get_scene(scene_id):
         return Response(response.content, mimetype='images/jpeg')
     else:
         return "Failed to retrieve images", 404
-
 
 @app.route('/update_like_status', methods=['POST'])
 def update_like_status():
@@ -74,7 +72,6 @@ def update_like_status():
     conn.close()
 
     return jsonify({'success': True})
-
 
 @app.route('/update_read_status', methods=['POST'])
 def update_read_status():
@@ -110,7 +107,6 @@ def update_delete_status():
 
     return jsonify({'success': True})
 
-
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()  # 获取前端发送的JSON数据
@@ -124,7 +120,6 @@ def login():
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Invalid username or password'})
-
 
 def check_login():
     if 'logged_in' not in session or not session['logged_in']:
@@ -142,13 +137,11 @@ def check_login():
             return False
     return True
 
-
 @app.route('/')
 def home():
     if check_login():
         return redirect(url_for('index'))
     return render_template('login.html')  # 返回登录页面
-
 
 @app.route('/logout')
 def logout():
@@ -156,7 +149,6 @@ def logout():
     session.pop('logged_in', None)
     session.pop('login_time', None)
     return redirect(url_for('home'))  # 重定向到登录页面
-
 
 @app.route('/update_file_like_status', methods=['POST'])
 def update_file_like_status():
@@ -170,25 +162,20 @@ def update_file_like_status():
     # print(rating)
 
     if is_video == "True":
-        # print("OK")
         payload = {
             "query": "mutation { sceneUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
         }
     else:
-        # print("NOT")
         payload = {
             "query": "mutation { imageUpdate(input: {id: " + file_id + ", rating100: " + rating + "}){rating100}}",
         }
 
     # 发起GraphQL请求
     response = requests.post(base_url + 'graphql', headers=headers, json=payload)
-    # print(response.status_code)
-    # print(response.json())
     if response.ok:
         return jsonify(success=True)
     else:
         return jsonify(success=False, message='更新失败'), 400
-
 
 @app.route('/folders', methods=['GET'])
 def index():
@@ -210,15 +197,24 @@ def index():
         folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
         # 查询子文件夹
         subdirectories = stash_query.find_subdirectory_by_id(folder_id)
+
         folder_has_subfolders = False if len(subdirectories) == 0 else True
+        if folder_has_subfolders:
+            subdirectories.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
+            root_folders = subdirectories
+            print(root_folders)
+        else:
+            root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
     else:
         folder_has_subfolders = True
+        root_folders = stash_query.find_subdirectory_by_id(folder_id)
 
     # 跳过最后一层目录
-    if folder_has_subfolders:
-        root_folders = stash_query.find_subdirectory_by_id(folder_id)
-    else:
-        root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
+    # if folder_has_subfolders:
+    #     root_folders = stash_query.find_subdirectory_by_id(folder_id)
+    #
+    # else:
+    #     root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
 
     # 获取当前路径的各个部分
     current_path_parts = []
@@ -257,7 +253,7 @@ def index():
         total_files = stash_query.find_file_num_by_folder_id(folder_id)
 
     else:
-        files_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset/2))
+        files_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
         total_files = stash_query.get_favorite_num()
         all_urls = []
         for scene_id in files_ids[1]:
