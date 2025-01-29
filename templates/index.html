@@ -41,6 +41,10 @@
         <a href="{{ url_for('index') }}" id="home-icon" class="home-btn">
             <i class="fas fa-home" style="color:white"></i> <!-- 白色房子图标 -->
         </a>
+        <!-- 新增网络切换按钮 -->
+        <a href="{{ url_for('index', id=folder_id) }}" class="network-btn" onclick=toggle_network_status({{ folder_id }})>
+            <i id="network-toggle" class="{% if network_status == 0 %}fas fa-desktop{% else %}fa fa-globe{% endif %}" style="color:white"></i>
+        </a>
     </div>
 
     <span class="folders_name">{{ folder_name }}</span>
@@ -203,6 +207,7 @@
 <script src="/static/js/images.js"></script>
 <script src="/static/js/logout.js"></script>
 <script src="/static/js/menu.js"></script>
+<script src="/static/js/network.js"></script>
 <script>
     function goToFolder(folder_id, parent_folder_id) {
         if (parent_folder_id === 3 || document.getElementById('openInNewWindow').checked) {

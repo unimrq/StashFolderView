@@ -17,9 +17,11 @@
 设置stash的账户凭证并生成stash_api
 ![img_3.png](static/images/img_3.png)
 ## 3. 部署stash-folder-view
-``docker run --restart=always -v /app/data:/app/data -e base_url=[stash_url] -e username=[username] -e password=[password] -e api_key=[stash_api] -p 8000:8000 -d unimrq/stash-folder-view``
+``docker run --restart=always -v /app/data:/app/data -e base_url=[stash_url] -e jump_url=[stash_url] -e username=[username] -e password=[password] -e api_key=[stash_api] -p 8000:8000 -d unimrq/stash-folder-view``
 
-stash_url: stash的访问地址，需要保留"/"；例如"http://192.168.1.51:12001/"
+stash_url: 容器访问stash的地址，需要保留"/"；例如"http://192.168.1.51:12001/"
+
+jump_url: 图片跳转链接的stash基础地址，留空默认与stash_url相同
 
 username: stash-folder-view登录用户名，不必与stash的凭证相同
 

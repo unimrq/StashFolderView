@@ -48,7 +48,7 @@
 
 
 .like-btn,
-.check-btn {
+.check-btn{
     margin-left: 10px; /* 控制两个按钮之间的间距 */
     cursor: pointer; /* 鼠标悬停时显示可点击 */
 }
@@ -59,9 +59,14 @@
     cursor: pointer;
 }
 
+.network-btn{
+    font-size: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+}
 
 .like-btn i,
-.check-btn i {
+.check-btn i{
     font-size: 24px; /* 设置图标的大小 */
 }
 
@@ -78,7 +83,7 @@
 }
 .folders_name{
     justify-self: center;
-    width: 800px;
+    width: 30%;
     white-space: nowrap;
     overflow: hidden;  /* 隐藏溢出的部分 */
     text-overflow: ellipsis;  /* 显示省略号 */

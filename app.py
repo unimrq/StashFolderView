@@ -12,11 +12,13 @@ from utils.folder_db_query import folder_status_process
 app = Flask(__name__)
 app.secret_key = 'stash-folder-view'
 base_url = os.environ.get('base_url')
+jump_url = os.environ.get('jump_url', base_url)
 username = os.environ.get('username')
 password = os.environ.get('password')
 api_key = os.environ.get('api_key')
 app.config['SESSION_COOKIE_NAME'] = 'stash-folder-view'
 logged = False
+network_status = 0  # 默认为内网模式
 
 # 配置SQLite数据库
 if not os.path.exists('data'):
@@ -109,6 +111,15 @@ def update_delete_status():
 
     return jsonify({'success': True})
 
+
+@app.route('/update_network_status', methods=['POST'])
+def update_network_status():
+    global network_status
+    data = request.get_json()
+    network_status = int(data['network_status'])
+    print("network_status", network_status)
+
+    return jsonify({'success': True})
 
 def generate_encrypted_string(username, password):
     combined_string = username + password
@@ -245,28 +256,15 @@ def index():
     # print(current_path_parts)
 
     # 收藏
-    if folder_id == 2:
-        # print("Im in folder_id 2")
-        files_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
-        total_files = stash_query.get_favorite_num()
-        total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
-        all_urls = []
-        for scene_id in files_ids[1]:
-            scene_url = f"/scene/{scene_id}"
-            scene_link = base_url + f"scenes/{scene_id}"
-            # scene_title, scene_rating = get_scene_status(scene_id)
-            scene_rating = stash_query.get_file_status(scene_id, True)
-            all_urls.append((scene_url, scene_link, True, scene_id, scene_rating))
-        for image_id in files_ids[0]:
-            image_url = f"/image/{image_id}"
-            image_link = base_url + f"images/{image_id}"
-            # image_title, image_rating = get_image_status(image_id)
-            image_rating = stash_query.get_file_status(image_id, False)
-            all_urls.append((image_url, image_link, False, image_id, image_rating))
-    # 获取该文件夹下的所有文件ID（分页）
-    elif folder_id:
-        file_ids = stash_query.find_file_id_by_folder_id(folder_id, per_page, offset)
-        total_files = stash_query.find_file_num_by_folder_id(folder_id)
+    if folder_id:
+        if folder_id == 2:
+            # print("Im in folder_id 2")
+            file_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
+            total_files = stash_query.get_favorite_num()
+        # 获取该文件夹下的所有文件ID（分页）
+        else:
+            file_ids = stash_query.find_file_id_by_folder_id(folder_id, per_page, offset)
+            total_files = stash_query.find_file_num_by_folder_id(folder_id)
         total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
         all_urls = []
         for file_id in file_ids:
@@ -274,12 +272,18 @@ def index():
 
             if not is_video:
                 image_url = f"/image/{content_id}"
-                image_link = base_url + f"images/{content_id}"
+                if network_status == 0:
+                    image_link = base_url + f"images/{content_id}"
+                else:
+                    image_link = jump_url + f"images/{content_id}"
                 image_rating = stash_query.get_file_status(content_id, is_video)
                 all_urls.append((image_url, image_link, is_video, content_id, image_rating))
             else:
                 scene_url = f"/scene/{content_id}"
-                scene_link = base_url + f"scenes/{content_id}"
+                if network_status == 0:
+                    scene_link = base_url + f"scenes/{content_id}"
+                else:
+                    scene_link = jump_url + f"scenes/{content_id}"
                 scene_rating = stash_query.get_file_status(content_id, is_video)
                 all_urls.append((scene_url, scene_link, is_video, content_id, scene_rating))
     else:
@@ -293,7 +297,7 @@ def index():
 
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
-                           current_path_parts=current_path_parts,
+                           current_path_parts=current_path_parts, network_status = network_status,
                            all_urls=all_urls, parent_folder_id=parent_folder_id,
                            page=page, total_pages=total_pages, folder_name=folder_name,
                            folder_has_subfolders=folder_has_subfolders,
