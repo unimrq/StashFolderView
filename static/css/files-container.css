@@ -1,0 +1,114 @@
+.files-container {
+    width: 80%;
+    /*{#flex-grow: 1;  !* 占满剩余空间 *!#}*/
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    margin-top: 70px;
+    /*{#flex-direction: inherit;#}*/
+    /*{#display: flex; !* 使用 flexbox 来确保内容居中 *!#}*/
+    flex-wrap: wrap; /* 保证内容换行 */
+    justify-content: center; /* 水平方向居中 */
+}
+
+.breadcrumb {
+    margin-left: 20px;
+    margin-right: 20px;
+    /*{#padding-top: 10px;#}*/
+    justify-self: center;
+    padding-bottom: 20px;
+    font-size: 16px;
+    max-height: 70px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: black;
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+}
+
+.grid-container {
+    width: 100%;
+    /*{#display: flex;#}*/
+    flex-wrap: wrap;
+    max-height: 100vh;
+    /*{#justify-content: center; !* 确保图片项在父容器内居中 *!#}*/
+    gap: 10px;
+    /*{#flex-direction: column;#}*/
+}
+
+.image-box{
+    display: flex;
+    /*{#flex-grow: 1;#}*/
+    justify-self: center;
+
+}
+
+.pagination {
+    /*{#flex-grow: 1;#}*/
+    margin-top: auto; /* 推到父容器底部 */
+    text-align: center;
+    padding: 10px;
+    /*{#width: auto;#}*/
+    /*{#background-color: #f0f0f0; !* 背景颜色，可选 *!#}*/
+}
+
+.grid-item {
+    /*{#display: flex;#}*/
+    width: 250px; /* 固定宽度 */
+    margin-bottom: 5px; /* 控制垂直间距 */
+    position: relative;
+    overflow: hidden; /* 防止溢出 */
+    flex: 1;
+}
+
+.grid-item img {
+    width: 100%; /* 宽度始终填满容器 */
+    height: auto; /* 高度根据宽度自动计算 */
+    object-fit: cover; /* 保持图片比例，裁切不合适的部分 */
+}
+.page-btn {
+    padding-top: 20px;
+    margin: 0 20px;
+    background-color: transparent;  /* 去除按钮背景颜色 */
+    border: none; /* 去除按钮边框 */
+    color: blue; /* 按钮文字颜色设置为蓝色 */
+    font-size: 18px; /* 可以根据需求调整按钮文字大小 */
+    cursor: pointer; /* 鼠标悬停时变为指针 */
+
+}
+
+.page-btn.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+.current-page {
+    font-size: 18px;
+    color: #5a79ba;
+    margin: 0 10px;
+}
+
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: white;
+    display: none; /* 默认不显示 */
+}
+
+.grid-item.video .play-icon {
+    display: block; /* 如果是视频则显示播放图标 */
+}
+
+.no-media-message {
+    font-size: 20px;
+    color: #888;
+    text-align: center;
+    margin-top: 50px;
+}
+

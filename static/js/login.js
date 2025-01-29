@@ -23,3 +23,4 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .catch(err => console.error('Error:', err));
 });
+

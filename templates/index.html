@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stash-Folder-View</title>
     <link rel="shortcut icon" href="/static/images/favicon.ico">
-{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">#}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
     <link rel="stylesheet" href="/static/css/image_heart.css">
+    <link rel="stylesheet" href="/static/css/files-container.css">
+    <link rel="stylesheet" href="/static/css/folders-container.css">
+    <link rel="stylesheet" href="/static/css/media.css">
+    <link rel="stylesheet" href="/static/css/toolbar.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,376 +24,12 @@
             text-decoration: none; /* 去掉下划线 */
         }
 
-        /* 顶部工具栏 */
-        .toolbar {
-            background-color: #5a79ba;
-            color: white;
-            padding: 10px 10px;
-            width: 100%;
-            height: 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            box-sizing: border-box;
-            z-index: 1000;
-        }
-
-        .delete-btn i {
-            font-size: 24px;
-            margin-left: 10px;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .delete-btn i:hover {
-            color: darkred; /* 鼠标悬停时显示暗红色 */
-        }
-
-        /* 退出按钮样式 */
-        .logout-btn {
-            cursor: pointer;
-            margin-left: 10px; /* 控制两个按钮之间的间距 */
-            {#margin-bottom: 10px;#}
-            font-size: 24px; /* 调整图标大小 */
-            display: inline-flex;
-            align-items: center;
-        }
-
-        /* 图标大小和颜色 */
-        .logout-btn i {
-            color: gray; /* 默认颜色 */
-            transition: color 0.3s ease;
-        }
-
-        /* 悬停时的颜色变化 */
-        .logout-btn:hover i {
-            color: red; /* 悬停时变红 */
-        }
-
-
-        .like-btn,
-        .check-btn {
-            margin-left: 10px; /* 控制两个按钮之间的间距 */
-            cursor: pointer; /* 鼠标悬停时显示可点击 */
-        }
-
-        .home-btn{
-            font-size: 22px;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-
-
-        .like-btn i,
-        .check-btn i {
-            font-size: 24px; /* 设置图标的大小 */
-        }
-
-        .toolbar {
-            font-size: 16px;
-            {#cursor: pointer;#}
-        }
-
-        .menu-btn {
-            font-size: 26px;
-            margin-left: 20px;
-            cursor: pointer;
-        }
-        .menu-btn i {
-            {#font-size: 28px;#}
-            {#margin-left: 20px;#}
-            {#cursor: pointer;#}
-            transform: translateY(2px); /* 向下移动图标 */
-        }
-
         .container {
             display: flex;
             flex-grow: 1;
             transition: margin-left 0.3s ease; /* 增加过渡效果 */
         }
 
-        /* 左侧：文件夹结构 */
-        .folders-container {
-            display: flex;
-            width: 20%;
-            margin-top: 50px;
-            padding-right: 10px;
-            box-sizing: border-box;
-            max-height: calc(100vh - 50px);
-            height: 100vh;
-            transition: transform 0.3s ease;
-            border-right: 1px solid #ccc; /* 右侧边框 */
-            flex-direction: column;
-            background: #B0BEDE;
-            overflow-y: auto;
-            scrollbar-color: #697EBF #B0BEDE;
-
-        }
-        ::-webkit-scrollbar-track {
-            background: #B0BEDE;
-          }
-
-        .folders-container h2 {
-            margin-top: 0;
-        }
-        .folders_draw{
-            width: 100%;
-        }
-
-        .breadcrumb {
-            margin-left: 20px;
-            margin-right: 20px;
-            {#padding-top: 10px;#}
-            justify-self: center;
-            padding-bottom: 20px;
-            font-size: 16px;
-            max-height: 70px;
-        }
-
-        .breadcrumb a {
-            text-decoration: none;
-            color: black;
-        }
-
-        .breadcrumb span {
-            margin: 0 5px;
-        }
-
-        .folder-bar {
-            {#width: 100%;#}
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px 10px 20px;
-            margin: 5px 0;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .folder-bar span {
-            font-size: 16px;
-        }
-
-        .files-container {
-            width: 80%;
-            {#flex-grow: 1;  /* 占满剩余空间 */#}
-            max-height: calc(100vh - 70px);
-            overflow-y: auto;
-            margin-top: 70px;
-            {#flex-direction: inherit;#}
-            {#display: flex; /* 使用 flexbox 来确保内容居中 */#}
-            flex-wrap: wrap; /* 保证内容换行 */
-            justify-content: center; /* 水平方向居中 */
-        }
-
-        .grid-container {
-            width: 100%;
-            {#display: flex;#}
-            flex-wrap: wrap;
-            max-height: 100vh;
-            {#justify-content: center; /* 确保图片项在父容器内居中 */#}
-            gap: 10px;
-            {#flex-direction: column;#}
-        }
-
-        .image-box{
-            display: flex;
-            {#flex-grow: 1;#}
-            justify-self: center;
-
-        }
-
-        .pagination {
-            {#flex-grow: 1;#}
-            margin-top: auto; /* 推到父容器底部 */
-            text-align: center;
-            padding: 10px;
-            {#width: auto;#}
-            {#background-color: #f0f0f0; /* 背景颜色，可选 */#}
-        }
-        .page-btn {
-            padding-top: 20px;
-            margin: 0 20px;
-            background-color: transparent;  /* 去除按钮背景颜色 */
-            border: none; /* 去除按钮边框 */
-            color: blue; /* 按钮文字颜色设置为蓝色 */
-            font-size: 18px; /* 可以根据需求调整按钮文字大小 */
-            cursor: pointer; /* 鼠标悬停时变为指针 */
-
-        }
-
-        .current-page {
-            font-size: 18px;
-            color: #5a79ba;
-            margin: 0 10px;
-        }
-
-
-        .grid-item {
-            {#display: flex;#}
-            width: 250px; /* 固定宽度 */
-            margin-bottom: 5px; /* 控制垂直间距 */
-            position: relative;
-            overflow: hidden; /* 防止溢出 */
-            flex: 1;
-        }
-
-        .grid-item img {
-            width: 100%; /* 宽度始终填满容器 */
-            height: auto; /* 高度根据宽度自动计算 */
-            object-fit: cover; /* 保持图片比例，裁切不合适的部分 */
-        }
-
-        /* 去除目录列表的小圆点 */
-        .folders-container ul {
-            padding-left: 0; /* 移除默认的内边距 */
-            margin: 0;
-        }
-
-        .folders-container li {
-            list-style-type: none; /* 去掉默认的小圆点 */
-            margin: 5px 0 0 10px;
-        }
-
-        .play-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 30px;
-            color: white;
-            display: none; /* 默认不显示 */
-        }
-
-        .grid-item.video .play-icon {
-            display: block; /* 如果是视频则显示播放图标 */
-        }
-
-        .no-media-message {
-            font-size: 20px;
-            color: #888;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        .folders_view {
-            width: 100% ;
-            display: flex;
-            {#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust column size based on screen width */#}
-            gap: 20px;  /* Space between items */
-            padding-left: 20px;
-            {#padding-right: 50px;#}
-            flex-wrap: wrap;
-            {#max-height: 150px;#}
-            justify-content: start;
-        }
-
-        /* Folder icon styling */
-        .folder-icon {
-            display: flex;
-            flex-direction: column;  /* 图标和文件名垂直排列 */
-            align-items: center;  /* 水平居中 */
-            {#justify-content: center;  /* 垂直居中 */#}
-            {#width: 100px;  /* 固定宽度 */#}
-            {#max-height: 100px;#}
-            {#height: 150px;  /* 固定高度 */#}
-            text-align: center;
-            border-radius: 8px;  /* 可选：圆角 */
-        }
-
-        .folder-icon i {
-            font-size: 3rem;  /* Enlarged folder icon */
-            color: #5a79ba;   /* Green folder color */
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: transform 0.2s ease;  /* 可选：平滑的悬停效果 */
-        }
-
-        .folder-icon span {
-            display: -webkit-box;  /* 使用弹性盒子模型 */
-            -webkit-box-orient: vertical;  /* 垂直排列 */
-            -webkit-line-clamp: 4;
-            overflow: hidden;  /* 隐藏溢出的部分 */
-            text-overflow: ellipsis;  /* 显示省略号 */
-            width: 100px;
-            max-height: 80px;
-            font-size: 14px;
-            color: #333;
-            margin-top: 5px;
-            line-height: 1.2;  /* 设置行高，避免文字过紧 */
-
-        }
-
-        /* 给 folder_control 添加一些布局样式 */
-        .folder_control {
-            margin-top: 10px;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            margin-left: 15px;
-            {#margin: 20px 0;#}
-        }
-
-        /* 控制复选框的大小和样式 */
-        .control-label input[type="checkbox"] {
-            margin-right: 3px;
-            width: 18px;
-            height: 18px;
-            accent-color: #4CAF50; /* 设置复选框的颜色 */
-        }
-
-        .highlighted {
-            background-color: #4CAF50; /* Change this color as needed */
-            border-radius: 8px;
-        }
-
-        .page-btn.disabled {
-            color: #ccc;
-            pointer-events: none;
-        }
-
-
-        /* 针对移动端屏幕的样式 */
-        @media (max-width: 768px) {
-            .grid-item {
-                width: 180px; /* 固定宽度 */
-            }
-
-            .folders-container {
-                display: none;
-                width: 0;
-            }
-
-            .files-container {
-                width: 100%;
-            }
-
-            .menu-btn {
-                margin-left: 0;
-            }
-
-            .page-btn {
-                font-size: 16px; /* 可以根据需求调整按钮文字大小 */
-            }
-
-            .current-page {
-                font-size: 16px;
-            }
-
-            .play-icon {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 20px;
-                color: white;
-                display: none; /* 默认不显示 */
-            }
-        }
     </style>
 </head>
 <body>
@@ -444,12 +82,12 @@
     <div class="folders-container" id="folders-container">
         <div class="folder_control">
             <label class="folder_control_label">
-                <input type="checkbox" id="openInNewWindow" /> 新窗口
+                <input type="checkbox" id="openInNewWindow"/> 新窗口
             </label>
 
             <!-- 收起/展开已读的复选框 -->
             <label class="folder_control_label">
-                <input type="checkbox" id="toggleRead" /> 收起已读
+                <input type="checkbox" id="toggleRead"/> 收起已读
             </label>
         </div>
         <div class="folders_draw">
@@ -459,12 +97,14 @@
                     {% set folder_read = folder_details[folder.folder_id].read_status %}
                     {% set folder_like = folder_details[folder.folder_id].like_status %}
                     {% set folder_delete = folder_details[folder.folder_id].delete_status %}
-                    <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}"
-                    data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}" >
+                    <li id="{{ folder.folder_id }}"
+                        class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}"
+                        data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
                         <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
-                            <div class="folder-bar" style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
-                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                            <span style="color: {% if folder_read == 0 %} black {% else %} gray {% endif %};">{{ folder.relative_path }}</span>
+                            <div class="folder-bar"
+                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                                         {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
+                                <span style="color: {% if folder_read == 0 %} black {% else %} gray {% endif %};">{{ folder.relative_path }}</span>
                             </div>
                         </a>
                     </li>
@@ -488,31 +128,34 @@
             <div class="grid-container">
                 <div class="image-box" id="masonry-grid">
                     {% for url, link, is_video, file_id, file_like in all_urls %}
-                    <div class="grid-item {% if is_video %}video{% endif %}">
-                        <a href="{{ link }}" target="_blank">
-                            <img src="{{ url }}" alt="图片"/>
-                        </a>
-                        {% if is_video %}
-                            <div class="play-icon">&#9654;</div> <!-- 播放图标 -->
-                        {% endif %}
-                        <!-- 使用Font Awesome爱心图标 -->
-                        <div class="like-icon" id="like-{{ file_id }}" data-liked="{{ file_like }}" onclick="toggleFileLike('{{ file_id }}', '{{ is_video }}')">
-                            {% if file_like == 100 %}
-                                <i class="fas fa-heart"></i> <!-- 红色爱心 -->
-                            {% else %}
-                                <i class="far fa-heart"></i> <!-- 空的爱心 -->
+                        <div class="grid-item {% if is_video %}video{% endif %}">
+                            <a href="{{ link }}" target="_blank">
+                                <img src="{{ url }}" alt="图片"/>
+                            </a>
+                            {% if is_video %}
+                                <div class="play-icon">&#9654;</div> <!-- 播放图标 -->
                             {% endif %}
+                            <!-- 使用Font Awesome爱心图标 -->
+                            <div class="like-icon" id="like-{{ file_id }}" data-liked="{{ file_like }}"
+                                 onclick="toggleFileLike('{{ file_id }}', '{{ is_video }}')">
+                                {% if file_like == 100 %}
+                                    <i class="fas fa-heart"></i> <!-- 红色爱心 -->
+                                {% else %}
+                                    <i class="far fa-heart"></i> <!-- 空的爱心 -->
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
                     {% endfor %}
                 </div>
                 <!-- 翻页按钮 -->
                 {% if total_pages > 1 %}
                     <div class="pagination" id="pagination">
-                        <a id="prevPage" class="page-btn {% if page == 1 %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
+                        <a id="prevPage" class="page-btn {% if page == 1 %} disabled {% endif %}"
+                           href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
                         <span class="current-page">{{ page }} of {{ total_pages }}</span> <!-- 显示当前页数 -->
-{#                        <span class="current-page">总页数：</span> <!-- 显示总页数 -->#}
-                        <a id="nextPage" class="page-btn {% if page == total_pages %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
+                        {#                        <span class="current-page">总页数：</span> <!-- 显示总页数 -->#}
+                        <a id="nextPage" class="page-btn {% if page == total_pages %} disabled {% endif %}"
+                           href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
                     </div>
                 {% endif %}
             </div>
@@ -522,8 +165,9 @@
 
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}
-                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}" ondblclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})" >
-                            <i class="fas fa-folder" ></i> <!-- 文件夹图标 -->
+                        <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
+                           ondblclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
+                            <i class="fas fa-folder"></i> <!-- 文件夹图标 -->
                             <span>{{ folder.relative_path | truncate(25) }}</span>
                         </a>
                     {% endfor %}
@@ -543,7 +187,6 @@
         {% endif %}
         <!-- 圆形按钮 -->
         <button id="actionButton" class="floating-btn"><i class="fa-solid fa-play"></i></button>
-
     </div>
 
 </div>
@@ -555,182 +198,19 @@
 <script src="/static/js/like.js"></script>
 <script src="/static/js/delete.js"></script>
 <script src="/static/js/floating-btn-menu.js"></script>
-
 <script src="/static/js/image_heart.js"></script>
+<script src="/static/js/folders.js"></script>
+<script src="/static/js/images.js"></script>
+<script src="/static/js/logout.js"></script>
+<script src="/static/js/menu.js"></script>
 <script>
-    if (folder_id) {
-        // 获取对应的元素
-        var element = document.getElementById(folder_id);
-        if (element) {
-            // 滚动到该元素
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-    }
-
-    function logout() {
-        fetch('/logout', {
-            method: 'GET',
-            credentials: 'same-origin' // 保证请求时带上当前的 session 信息
-        })
-        .then(response => {
-            if (response.ok) {
-                window.location.href = '/'; // 重定向到登录页面
-            } else {
-                alert('退出失败，请稍后再试');
-            }
-        })
-        .catch(error => {
-            console.error('退出时发生错误:', error);
-            alert('退出失败，请稍后再试');
-        });
-    }
-
-    // 菜单按钮点击事件：切换目录栏的显示与隐藏
-    const menuBtn = document.getElementById('menu-btn');
-    const foldersContainer = document.getElementById('folders-container');
-    const filesContainer = document.getElementById('files-container');
-    const breadcrumb= document.getElementById('breadcrumb');
-    let isHide = localStorage.getItem('isHide');
-    const isMobile = window.innerWidth <= 768;
-    isHide = isMobile;
-
-    const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
-
-    menuBtn.addEventListener('click', function () {
-        {#foldersContainer.classList.toggle('hidden');  // 切换 hidden 类来显示/隐藏目录#}
-        isHide = !isHide
-        localStorage.setItem('isHide', isHide);
-
-        if (isMobile) {
-            if (isHide) {
-                filesContainer.style.width = '100%';  // 设置宽度为100%
-                foldersContainer.style.width = '0%'
-                {#breadcrumb.style.display = 'none'#}
-                foldersContainer.style.overflowY = 'hidden'
-                foldersContainer.style.paddingRight = '0'
-            } else {
-                filesContainer.style.width = '0%';   // 恢复为原来的宽度
-                foldersContainer.style.width = '100%'
-                {#breadcrumb.style.display = 'block'#}
-                foldersContainer.style.display = 'block'
-                foldersContainer.style.overflowY = 'auto'
-                foldersContainer.style.paddingRight = '10px'
-            }
-        } else {
-            if (isHide) {
-                filesContainer.style.width = '100%';  // 设置宽度为100%
-                foldersContainer.style.width = '0%'
-                {#breadcrumb.style.display = 'none'#}
-                foldersContainer.style.overflowY = 'hidden'
-                foldersContainer.style.paddingRight = '0'
-            } else {
-                filesContainer.style.width = '80%';   // 恢复为原来的宽度
-                foldersContainer.style.width = '20%'
-                {#breadcrumb.style.display = 'block'#}
-                foldersContainer.style.display = 'block'
-                foldersContainer.style.overflowY = 'auto'
-                foldersContainer.style.paddingRight = '10px'
-            }
-        }
-    });
-</script>
-<script>
-    const grid = document.querySelector('#masonry-grid');
-    // 初始化 Masonry
-    const masonryInstance = new Masonry(grid, {
-        itemSelector: '.grid-item',  // 每个项目
-        columnWidth: '.grid-item',    // 每列的宽度
-        percentPosition: true,       // 使宽度为百分比
-        gutter: 10,                  // 每个项目之间的间距
-        fitWidth: true,              // 容器宽度自适应
-        isResizable: true,           // 响应式调整
-        horizontalOrder: false,       // 使 Masonry 容器按水平方向顺序排列
-    });
-
-    // 监听每个图片的加载事件
-    const images = document.querySelectorAll('.grid-item img');
-    images.forEach(function (img) {
-        img.addEventListener('load', function () {
-            // 图片加载完成后，显示相应的播放图标
-            var parentItem = img.closest('.grid-item');
-            if (parentItem.classList.contains('video')) {
-                parentItem.querySelector('.play-icon').style.display = 'block';
-            }
-            // 图片加载完成后，触发 Masonry 布局
-            masonryInstance.layout();  // 重新计算 Masonry 布局
-        });
-    });
-
-    // 使用 imagesLoaded 插件监听图片加载完成
-    imagesLoaded(grid, function() {
-        masonryInstance.layout();
-    });
-    window.addEventListener('resize', function() {
-        masonryInstance.layout();
-      });
-
-</script>
-<script defer>
-
-    {#const go_folderId = document.getElementById('folder-icon').getAttribute('data-folder-id');#}
     function goToFolder(folder_id, parent_folder_id) {
         if (parent_folder_id === 3 || document.getElementById('openInNewWindow').checked) {
             window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
         } else {
             window.location.href = "{{ url_for('index') }}?id=" + folder_id;
         }
-
-
     }
-
-    const toggleReadCheckbox = document.getElementById('toggleRead');
-    const newWindowCheckbox = document.getElementById('openInNewWindow');
-    const folderList = document.getElementById('folderList');
-    function updateFolderVisibility() {
-        // 获取所有文件夹项
-        const folders = folderList.getElementsByClassName('folder');
-
-        for (let folder of folders) {
-            const folderRead = folder.getAttribute('data-folder-read');
-            const folderRelativePath = folder.getAttribute('data-folder-relative-path');
-
-            // 判断复选框状态和文件夹的状态
-            if (toggleReadCheckbox.checked === false) {
-                // 如果 check_box 为 0，全部显示
-                folder.style.display = 'block';
-            } else {
-                // 如果 check_box 为 1，且 folder.relative_path != '上一级'，隐藏 folder_read == 1 的项
-                if (folderRelativePath !== '上一级' && folderRead === '1') {
-                    folder.style.display = 'none';
-                } else {
-                    folder.style.display = 'block';
-                }
-            }
-        }
-    }
-
-    // 监听复选框状态变化
-    newWindowCheckbox.addEventListener('change', function (){
-        localStorage.setItem('newWindowCheckbox', newWindowCheckbox.checked);
-    });
-    toggleReadCheckbox.addEventListener('change', function (){
-        updateFolderVisibility();
-        localStorage.setItem('toggleReadState', toggleReadCheckbox.checked);
-
-    });
-
-
-    window.onload = function() {
-        // 检查 localStorage 中是否有已保存的状态
-        const savedState1 = localStorage.getItem('toggleReadState');
-        const savedState2 = localStorage.getItem('newWindowCheckbox');
-        if (savedState1 !== null && savedState2 !== null) {
-            toggleReadCheckbox.checked = (savedState1 === 'true');
-            newWindowCheckbox.checked = (savedState2 === 'true');
-            updateFolderVisibility();
-        }
-    };
-
 </script>
 </body>
 </html>

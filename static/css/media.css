@@ -1,0 +1,37 @@
+/* 针对移动端屏幕的样式 */
+@media (max-width: 768px) {
+    .grid-item {
+        width: 180px; /* 固定宽度 */
+    }
+
+    .folders-container {
+        display: none;
+        width: 0;
+    }
+
+    .files-container {
+        width: 100%;
+    }
+
+    .menu-btn {
+        margin-left: 0;
+    }
+
+    .page-btn {
+        font-size: 16px; /* 可以根据需求调整按钮文字大小 */
+    }
+
+    .current-page {
+        font-size: 16px;
+    }
+
+    .play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        color: white;
+        display: none; /* 默认不显示 */
+    }
+}
