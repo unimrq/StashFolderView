@@ -34,14 +34,14 @@
     padding: 10px 20px 10px 20px;
     margin: 5px 0;
     /*font-size: 14px;*/
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡效果 */
 
 }
 
 .folder-bar:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 悬停时阴影效果 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影效果 */
 
 }
 
@@ -110,13 +110,13 @@
 
 /* 给 folder_control 添加一些布局样式 */
 .folder_control {
-    margin-top: 10px;
+    /*margin-top: 20px;*/
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
     align-items: start;
     gap: 20px;
-    /*padding: 10px;*/
+    padding-top: 15px;
     border-radius: 8px;
     margin-left: 28px;
     font-size: 14px;

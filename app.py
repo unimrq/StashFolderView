@@ -261,31 +261,51 @@ def index():
             # print("Im in folder_id 2")
             file_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
             total_files = stash_query.get_favorite_num()
+            total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
+            all_urls = []
+            for scene_id in file_ids[1]:
+                scene_url = f"/scene/{scene_id}"
+                if network_status == 0:
+                    scene_link = base_url + f"scenes/{scene_id}"
+                else:
+                    scene_link = jump_url + f"scenes/{scene_id}"
+                # scene_title, scene_rating = get_scene_status(scene_id)
+                scene_rating = stash_query.get_file_status(scene_id, True)
+                all_urls.append((scene_url, scene_link, True, scene_id, scene_rating))
+            for image_id in file_ids[0]:
+                image_url = f"/image/{image_id}"
+                if network_status == 0:
+                    image_link = base_url + f"images/{image_id}"
+                else:
+                    image_link = jump_url + f"images/{image_id}"
+                # image_title, image_rating = get_image_status(image_id)
+                image_rating = stash_query.get_file_status(image_id, False)
+                all_urls.append((image_url, image_link, False, image_id, image_rating))
         # 获取该文件夹下的所有文件ID（分页）
         else:
             file_ids = stash_query.find_file_id_by_folder_id(folder_id, per_page, offset)
             total_files = stash_query.find_file_num_by_folder_id(folder_id)
-        total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
-        all_urls = []
-        for file_id in file_ids:
-            content_id, is_video = stash_query.find_image_id_or_scene_id_by_file_id(file_id)
+            total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
+            all_urls = []
+            for file_id in file_ids:
+                content_id, is_video = stash_query.find_image_id_or_scene_id_by_file_id(file_id)
 
-            if not is_video:
-                image_url = f"/image/{content_id}"
-                if network_status == 0:
-                    image_link = base_url + f"images/{content_id}"
+                if not is_video:
+                    image_url = f"/image/{content_id}"
+                    if network_status == 0:
+                        image_link = base_url + f"images/{content_id}"
+                    else:
+                        image_link = jump_url + f"images/{content_id}"
+                    image_rating = stash_query.get_file_status(content_id, is_video)
+                    all_urls.append((image_url, image_link, is_video, content_id, image_rating))
                 else:
-                    image_link = jump_url + f"images/{content_id}"
-                image_rating = stash_query.get_file_status(content_id, is_video)
-                all_urls.append((image_url, image_link, is_video, content_id, image_rating))
-            else:
-                scene_url = f"/scene/{content_id}"
-                if network_status == 0:
-                    scene_link = base_url + f"scenes/{content_id}"
-                else:
-                    scene_link = jump_url + f"scenes/{content_id}"
-                scene_rating = stash_query.get_file_status(content_id, is_video)
-                all_urls.append((scene_url, scene_link, is_video, content_id, scene_rating))
+                    scene_url = f"/scene/{content_id}"
+                    if network_status == 0:
+                        scene_link = base_url + f"scenes/{content_id}"
+                    else:
+                        scene_link = jump_url + f"scenes/{content_id}"
+                    scene_rating = stash_query.get_file_status(content_id, is_video)
+                    all_urls.append((scene_url, scene_link, is_video, content_id, scene_rating))
     else:
         all_urls = []
         total_pages = 0
