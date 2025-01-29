@@ -11,7 +11,19 @@
 6. 支持docker部署；
 7. 实现收藏图片展示、收藏文件夹展示；
 # 部署
-docker run --restart=always -v /app/data:/app/data -e base_url=[stash url] -e username=[username] -e password=[password] -e api_key=[stashApi] -p 8000:8000 -d unimrq/stash-folder-view
+## 1. 部署stash
+如果您没有部署stash，请先参考原仓库https://github.com/stashapp/stash
+## 2. 获取stash_api
+设置stash的账户凭证并生成stash_api
+![img_3.png](static/images/img_3.png)
+## 3. 部署stash-folder-view
+``docker run --restart=always -v /app/data:/app/data -e base_url=[stash_url] -e username=[username] -e password=[password] -e api_key=[stash_api] -p 8000:8000 -d unimrq/stash-folder-view``
+
+stash_url: stash的访问地址，需要保留"/"；例如"http://192.168.1.51:12001/"
+
+username: stash-folder-view登录用户名，不必与stash的凭证相同
+
+password: stash-folder-view登录密码，不必与stash的凭证相同
 # TODO
 1. 优化悬浮按钮逻辑；完成
 2. 瀑布流显示收藏按钮；完成

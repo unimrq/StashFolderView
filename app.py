@@ -246,7 +246,7 @@ def index():
 
     # 收藏
     if folder_id == 2:
-        print("Im in folder_id 2")
+        # print("Im in folder_id 2")
         files_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
         total_files = stash_query.get_favorite_num()
         total_pages = (total_files // per_page) + (1 if total_files % per_page > 0 else 0)
