@@ -90,7 +90,7 @@
 
         .toolbar {
             font-size: 16px;
-            cursor: pointer;
+            {#cursor: pointer;#}
         }
 
         .menu-btn {
@@ -116,36 +116,42 @@
             display: flex;
             width: 20%;
             margin-top: 50px;
-            background: #fafafa;
+            padding-right: 10px;
             box-sizing: border-box;
             max-height: calc(100vh - 50px);
             height: 100vh;
             transition: transform 0.3s ease;
             border-right: 1px solid #ccc; /* 右侧边框 */
-            flex-direction: column;
-        }
-
-        .folders_draw {
+            {#flex-direction: column;#}
+            background: #B0BEDE;
             overflow-y: auto;
-            flex-grow: 1;  /* 占满剩余空间 */
-            max-height: calc(100vh - 50px);
+            scrollbar-color: #697EBF #B0BEDE;
+
         }
+        ::-webkit-scrollbar-track {
+            background: #B0BEDE;
+          }
 
         .folders-container h2 {
             margin-top: 0;
         }
+        .folders_draw a {
+            color: #cccccc;
+        }
 
         .breadcrumb {
-            margin-left: 30px;
-            margin-right: 30px;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            font-size: 14px;
+            margin-left: 20px;
+            margin-right: 20px;
+            {#padding-top: 10px;#}
+            justify-self: center;
+            padding-bottom: 20px;
+            font-size: 16px;
+            max-height: 70px;
         }
 
         .breadcrumb a {
             text-decoration: none;
-            color: #007BFF;
+            color: black;
         }
 
         .breadcrumb span {
@@ -167,11 +173,12 @@
 
         .files-container {
             width: 80%;
+            {#flex-grow: 1;  /* 占满剩余空间 */#}
             max-height: calc(100vh - 70px);
             overflow-y: auto;
             margin-top: 70px;
             {#flex-direction: inherit;#}
-            display: flex; /* 使用 flexbox 来确保内容居中 */
+            {#display: flex; /* 使用 flexbox 来确保内容居中 */#}
             flex-wrap: wrap; /* 保证内容换行 */
             justify-content: center; /* 水平方向居中 */
         }
@@ -207,14 +214,14 @@
             background-color: transparent;  /* 去除按钮背景颜色 */
             border: none; /* 去除按钮边框 */
             color: blue; /* 按钮文字颜色设置为蓝色 */
-            font-size: 22px; /* 可以根据需求调整按钮文字大小 */
+            font-size: 18px; /* 可以根据需求调整按钮文字大小 */
             cursor: pointer; /* 鼠标悬停时变为指针 */
 
         }
 
         .current-page {
-            font-size: 22px;
-            color: #4CAF50;
+            font-size: 18px;
+            color: #5a79ba;
             margin: 0 10px;
         }
 
@@ -271,8 +278,10 @@
             display: flex;
             {#grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust column size based on screen width */#}
             gap: 20px;  /* Space between items */
-            padding: 20px;
+            {#padding: 20px;#}
+            {#padding-right: 50px;#}
             flex-wrap: wrap;
+            max-height: 150px;
             justify-content: flex-start;
         }
 
@@ -282,8 +291,8 @@
             flex-direction: column;  /* 图标和文件名垂直排列 */
             align-items: center;  /* 水平居中 */
             {#justify-content: center;  /* 垂直居中 */#}
-            width: 100px;  /* 固定宽度 */
-
+            {#width: 100px;  /* 固定宽度 */#}
+            {#max-height: 100px;#}
             {#height: 150px;  /* 固定高度 */#}
             text-align: center;
             border-radius: 8px;  /* 可选：圆角 */
@@ -291,7 +300,7 @@
 
         .folder-icon i {
             font-size: 3rem;  /* Enlarged folder icon */
-            color: #4CAF50;   /* Green folder color */
+            color: #5a79ba;   /* Green folder color */
             margin-bottom: 10px;
             cursor: pointer;
             transition: transform 0.2s ease;  /* 可选：平滑的悬停效果 */
@@ -340,6 +349,14 @@
 
             .menu-btn {
                 margin-left: 0;
+            }
+
+            .page-btn {
+                font-size: 16px; /* 可以根据需求调整按钮文字大小 */
+            }
+
+            .current-page {
+                font-size: 16px;
             }
 
             .play-icon {
@@ -400,36 +417,34 @@
     <div id="page" data-folder-id="{{ page }}"></div>
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
     <div class="folders-container" id="folders-container">
-        <div class="breadcrumb" id="breadcrumb">
+        <ul>
+            {% for folder in root_folders %}
+                {% set folder_read = folder_details[folder.folder_id].read_status %}
+                {% set folder_like = folder_details[folder.folder_id].like_status %}
+                {% set folder_delete = folder_details[folder.folder_id].delete_status %}
+                <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}">
+                    <a href="{{ url_for('index', id=folder.folder_id) }}">
+                        <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
+                            {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
+                        <span style="color: {% if folder_read == 0 %} #4A3B8C {% else %} black {% endif %};">{{ folder.relative_path }}</span>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- 右侧：文件内容展示 -->
+    <div class="files-container" id="files-container">
+        {% if all_urls %}
+            <div class="breadcrumb" id="breadcrumb">
+                <span>当前路径:</span>
                 <a href="{{ url_for('index', id=None) }}">根目录</a>
                 {% for path_part, part_folder_id in current_path_parts %}
                     <span>/</span>
                     <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
                 {% endfor %}
-        </div>
-        <div class="folders_draw" id="folders_draw">
-            <ul>
-                {% for folder in root_folders %}
-                    {% set folder_read = folder_details[folder.folder_id].read_status %}
-                    {% set folder_like = folder_details[folder.folder_id].like_status %}
-                    {% set folder_delete = folder_details[folder.folder_id].delete_status %}
-                    <li id="{{ folder.folder_id }}" class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}">
-                        <a href="{{ url_for('index', id=folder.folder_id) }}">
-                            <div class="folder-bar" style="background-color: {% if folder_like == 1 %} #e4ab9b {% elif folder_read == 1 %} transparent {% else %} transparent {% endif %};
-                                {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                            <span style="color: {% if folder_read == 0 %} #007BFF {% else %} black {% endif %};">{{ folder.relative_path }}</span>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
-    <!-- 右侧：文件内容展示 -->
-    <div class="files-container" id="files-container">
-
-        {% if all_urls %}
+            </div>
             <div class="grid-container">
                 <div class="image-box" id="masonry-grid">
                     {% for url, link, is_video, file_id, file_like in all_urls %}
@@ -455,8 +470,8 @@
                 {% if total_pages > 1 %}
                     <div class="pagination" id="pagination">
                         <a id="prevPage" class="page-btn {% if page == 1 %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page - 1) }}">上一页</a>
-                        <span class="current-page">当前页：{{ page }}</span> <!-- 显示当前页数 -->
-                        <span class="current-page">总页数：{{ total_pages }}</span> <!-- 显示总页数 -->
+                        <span class="current-page">{{ page }} of {{ total_pages }}</span> <!-- 显示当前页数 -->
+{#                        <span class="current-page">总页数：</span> <!-- 显示总页数 -->#}
                         <a id="nextPage" class="page-btn {% if page == total_pages %} disabled {% endif %}" href="{{ url_for('index', id=folder_id, page=page + 1) }}">下一页</a>
                     </div>
                 {% endif %}
@@ -481,6 +496,14 @@
                     {% endfor %}
                 </div>
             {% else %}
+                <div class="breadcrumb" id="breadcrumb">
+                    <span>当前路径:</span>
+                    <a href="{{ url_for('index', id=None) }}">根目录</a>
+                    {% for path_part, part_folder_id in current_path_parts %}
+                        <span>/</span>
+                        <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
+                    {% endfor %}
+                </div>
                 <div class="no-media-message">无媒体文件</div>
             {% endif %}
 
@@ -533,11 +556,11 @@
     const menuBtn = document.getElementById('menu-btn');
     const foldersContainer = document.getElementById('folders-container');
     const filesContainer = document.getElementById('files-container');
-    const folders_draw= document.getElementById('folders_draw');
     const breadcrumb= document.getElementById('breadcrumb');
     let isHide = localStorage.getItem('isHide');
-    isHide = true
     const isMobile = window.innerWidth <= 768;
+    isHide = isMobile;
+
     const folder_has_medias = document.getElementById('folder_has_medias').getAttribute('data-folder-id');
 
     menuBtn.addEventListener('click', function () {
@@ -549,27 +572,31 @@
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                breadcrumb.style.display = 'none'
-                {#folders_draw.style.overflowY = 'hidden'#}
+                {#breadcrumb.style.display = 'none'#}
+                foldersContainer.style.overflowY = 'hidden'
+                foldersContainer.style.paddingRight = '0'
             } else {
                 filesContainer.style.width = '0%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '100%'
-                breadcrumb.style.display = 'block'
+                {#breadcrumb.style.display = 'block'#}
                 foldersContainer.style.display = 'block'
-                {#folders_draw.style.overflowY = 'auto'#}
+                foldersContainer.style.overflowY = 'auto'
+                foldersContainer.style.paddingRight = '10px'
             }
         } else {
             if (isHide) {
                 filesContainer.style.width = '100%';  // 设置宽度为100%
                 foldersContainer.style.width = '0%'
-                breadcrumb.style.display = 'none'
-                {#folders_draw.style.overflowY = 'hidden'#}
+                {#breadcrumb.style.display = 'none'#}
+                foldersContainer.style.overflowY = 'hidden'
+                foldersContainer.style.paddingRight = '0'
             } else {
                 filesContainer.style.width = '80%';   // 恢复为原来的宽度
                 foldersContainer.style.width = '20%'
-                breadcrumb.style.display = 'block'
+                {#breadcrumb.style.display = 'block'#}
                 foldersContainer.style.display = 'block'
-                {#folders_draw.style.overflowY = 'auto'#}
+                foldersContainer.style.overflowY = 'auto'
+                foldersContainer.style.paddingRight = '10px'
             }
         }
     });
@@ -605,6 +632,9 @@
     imagesLoaded(grid, function() {
         masonryInstance.layout();
     });
+    window.addEventListener('resize', function() {
+        masonryInstance.layout();
+      });
 
 </script>
 <script defer>

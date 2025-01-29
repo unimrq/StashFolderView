@@ -21,7 +21,7 @@ if not os.path.exists('data'):
     os.makedirs('data')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///folders.db'  # SQLite数据库文件
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 禁用信号跟踪（提高性能）
-SESSION_TIMEOUT = timedelta(minutes=30)
+SESSION_TIMEOUT = timedelta(minutes=300)
 headers = {
     'Content-Type': 'application/json',
     'ApiKey': api_key,
