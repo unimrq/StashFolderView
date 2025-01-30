@@ -1,4 +1,5 @@
 import hashlib
+import logging
 import sqlite3
 from datetime import timedelta, datetime, timezone
 from utils import stash_query
@@ -19,6 +20,12 @@ api_key = os.environ.get('api_key')
 app.config['SESSION_COOKIE_NAME'] = 'stash-folder-view'
 logged = False
 network_status = 0  # 默认为内网模式
+
+# 配置日志输出
+app.logger.setLevel(logging.DEBUG)  # 设置日志级别
+handler = logging.StreamHandler()  # 输出到控制台
+handler.setLevel(logging.DEBUG)  # 设置输出级别
+app.logger.addHandler(handler)
 
 # 配置SQLite数据库
 if not os.path.exists('data'):
