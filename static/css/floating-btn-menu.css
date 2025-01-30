@@ -37,6 +37,11 @@ body {
         right: 15px;  /* 离右边15px */
     }
 
+    .floating-btn {
+        bottom: 20px;  /* 离底部20px */
+        left: 20px;  /* 离右边20px */
+    }
+
     /*!* 三角形样式 *!*/
     /*.floating-btn::before {*/
     /*    top: 50%;*/
