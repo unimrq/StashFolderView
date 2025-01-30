@@ -11,14 +11,14 @@ function toggleReadStatus(folderId) {
         // 切换到未读状态
         icon.classList.remove('fas', 'fa-check-square');  // 移除已读图标
         icon.classList.add('far', 'fa-check-square');     // 添加未读图标
-        icon.style.color = 'white';                         // 设置为灰色
+        icon.style.color = 'white';
         // 更新数据库状态为未读
         updateReadStatus(folderId, 0);
     } else {
         // 如果当前是未读状态，点击后变为已读
         icon.classList.remove('far', 'fa-check-square');  // 移除未读图标
         icon.classList.add('fas', 'fa-check-square');     // 添加已读图标
-        icon.style.color = 'lightgreen';                        // 设置为绿色
+        icon.style.color = 'lightgray';
         // 更新数据库状态为已读
         updateReadStatus(folderId, 1);
     }
