@@ -67,7 +67,7 @@
         <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
                 <i id="check-icon-{{ folder_id }}-icon"
                    class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
-                   style="color: {% if folder_details[folder_id].read_status == 1 %}darkgreen{% else %}'var(--icon-color)'{% endif %};"></i>
+                   style="color: {% if folder_details[folder_id].read_status == 1 %}green{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 退出图标 -->
         <span id="setting-icon" class="setting-btn" onclick="toggleMenu()">
