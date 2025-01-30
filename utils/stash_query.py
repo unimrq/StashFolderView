@@ -22,6 +22,7 @@ def find_images_by_rating(page, per_page, ):
                  f"}}"
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         # print(response.json())
         return [item['id'] for item in response.json()['data']['findImages']['images']]
@@ -39,6 +40,7 @@ def find_scenes_by_rating(page, per_page, ):
                  f"}}"
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         # print(response.json())
         return [item['id'] for item in response.json()['data']['findScenes']['scenes']]
@@ -56,6 +58,7 @@ def find_images_by_path(page, per_page, path):
                  f"}}"
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         # print(response.json())
         return response.json()['data']['findImages']
@@ -73,6 +76,7 @@ def find_scenes_by_path(page, per_page, path):
                  f"}}"
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         print(response.json()['data']['findScenes'])
         return response.json()['data']['findScenes']
@@ -86,6 +90,7 @@ def find_directory_by_path(path):
     }
     response = requests.post(api_url, headers=headers, json=json)
     # print(response.json())
+    # print(response.status_code)
     if response.status_code == 200:
         return response.json()['data']['directory']
     else:
@@ -115,6 +120,7 @@ def find_directory_by_id(folder_id):
     }
     response = requests.post(api_url, headers=headers, json=json)
     # print(response.json())
+    # print(response.status_code)
     if response.status_code == 200:
         results = response.json()['data']['querySQL']['rows'][0]
         return [results[0], results[1] if results[1] is not None else 0]
@@ -185,7 +191,7 @@ def find_subdirectory_by_id(folder_id=None):
     response = requests.post(api_url, headers=headers, json=json)
     # print(response.text)
     # print(response.status_code)
-
+    # print(response.status_code)
     if response.status_code == 200:
         folders = []
         rows = response.json()['data']['querySQL']['rows']
@@ -218,6 +224,7 @@ def find_file_id_by_folder_id(folder_id, limit, offset):
                     """
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         # print(response.json()['data']['querySQL']['rows'])
         return [item[0] for item in response.json()['data']['querySQL']['rows']]
@@ -239,6 +246,7 @@ def find_file_num_by_folder_id(folder_id):
                     """
     }
     response = requests.post(api_url, headers=headers, json=json)
+    # print(response.status_code)
     if response.status_code == 200:
         # print(response.json()['data']['querySQL']['rows'])
         return response.json()['data']['querySQL']['rows'][0][0]
@@ -272,6 +280,8 @@ def find_image_id_or_scene_id_by_file_id(file_id):
     }
     response1 = requests.post(api_url, headers=headers, json=json1)
     response2 = requests.post(api_url, headers=headers, json=json2)
+    # print(response1.status_code)
+    # print(response2.status_code)
     if response1.status_code == 200 and response2.status_code == 200:
         image_id = response1.json()['data']['querySQL']['rows']
         scene_id = response2.json()['data']['querySQL']['rows']
@@ -291,6 +301,7 @@ def get_file_status(file_id, is_video):
             # "query": "mutation { sceneUpdate(input: {id: " + str(file_id) + "}){rating100}}",
         }
         response = requests.post(api_url, headers=headers, json=payload)
+        # print(response.status_code)
         # print("video")
         # print(response.status_code)
         # print(response.text)
@@ -336,6 +347,8 @@ def get_favorite_files(per_page, offset):
     response1 = requests.post(api_url, headers=headers, json=json1)
     response2 = requests.post(api_url, headers=headers, json=json2)
     # print(response1.text)
+    # print(response1.status_code)
+    # print(response2.status_code)
     image_ids = [item[0] for item in response1.json()['data']['querySQL']['rows']]
     scene_ids = [item[0] for item in response2.json()['data']['querySQL']['rows']]
     return image_ids, scene_ids
@@ -367,7 +380,8 @@ def get_favorite_num():
     }
     response1 = requests.post(api_url, headers=headers, json=json1)
     response2 = requests.post(api_url, headers=headers, json=json2)
-
+    # print(response1.status_code)
+    # print(response2.status_code)
     if response1.status_code == 200 and response2.status_code == 200:
         num = response1.json()['data']['querySQL']['rows'][0][0] + response2.json()['data']['querySQL']['rows'][0][0]
         return num

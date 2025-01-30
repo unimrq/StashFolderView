@@ -21,12 +21,6 @@ app.config['SESSION_COOKIE_NAME'] = 'stash-folder-view'
 logged = False
 network_status = 0  # 默认为内网模式
 
-# 配置日志输出
-app.logger.setLevel(logging.DEBUG)  # 设置日志级别
-handler = logging.StreamHandler()  # 输出到控制台
-handler.setLevel(logging.DEBUG)  # 设置输出级别
-app.logger.addHandler(handler)
-
 # 配置SQLite数据库
 if not os.path.exists('data'):
     os.makedirs('data')
@@ -39,7 +33,7 @@ headers = {
 }
 # 初始化SQLAlchemy
 db = SQLAlchemy(app)
-
+app.debug = True
 
 @app.route('/image/<path:image_id>')
 def get_image(image_id):
@@ -331,6 +325,12 @@ def index():
                            folder_has_medias=folder_has_medias, base_url=base_url)
 
 
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
 # 启动Flask应用
 if __name__ == '__main__':
+    # app.debug = True
     app.run(host='0.0.0.0', port=8000)
