@@ -61,9 +61,12 @@ window.onload = function() {
     if (storedFolderId) {
         // 获取对应的元素
         var element = document.getElementById(storedFolderId);
-        if (element) {
+        var folderRelativePath = element.getAttribute("data-folder-relative-path");
+
+        if (element && folderRelativePath !== '上一级') {
             // 滚动到该元素
             element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.toggle("highlighted");
         }
     }
     localStorage.setItem('folder_id', folder_id);
