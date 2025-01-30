@@ -35,7 +35,7 @@ db = SQLAlchemy(app)
 
 
 @app.route('/image/<path:image_id>')
-async def get_image(image_id):
+def get_image(image_id):
     # 图片的外部URL
     full_url = base_url + f"image/{image_id}/thumbnail"
 
@@ -49,7 +49,7 @@ async def get_image(image_id):
         return "Failed to retrieve images", 404
 
 @app.route('/scene/<path:scene_id>')
-async def get_scene(scene_id):
+def get_scene(scene_id):
     # 图片的外部URL
     full_url = base_url + f"scene/{scene_id}/screenshot"
 
@@ -326,4 +326,4 @@ def index():
 
 # 启动Flask应用
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, threaded=True)
+    app.run(host='0.0.0.0', port=8000)
