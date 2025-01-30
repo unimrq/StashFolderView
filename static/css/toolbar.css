@@ -30,6 +30,11 @@
     color: red; /* 悬停时变红 */
 }
 
+.check-btn:hover i {
+    /*background-color: red;*/
+    color: lightgray; /* 悬停时变红 */
+}
+
 .like-btn,
 .check-btn{
     margin-left: 10px; /* 控制两个按钮之间的间距 */
