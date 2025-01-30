@@ -227,13 +227,15 @@ def index():
         subdirectories = stash_query.find_subdirectory_by_id(folder_id)
 
         folder_has_subfolders = False if len(subdirectories) == 0 else True
-        if folder_has_subfolders:
-            subdirectories.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
-            root_folders = subdirectories
-            # print(root_folders)
-        else:
-            root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
-            root_folders.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
+        subdirectories.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
+        root_folders = subdirectories
+        # if folder_has_subfolders:
+        #     subdirectories.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
+        #     root_folders = subdirectories
+        #     # print(root_folders)
+        # else:
+        #     root_folders = stash_query.find_subdirectory_by_id(parent_folder_id)
+        #     root_folders.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
     else:
         folder_has_subfolders = True
         root_folders = stash_query.find_subdirectory_by_id(folder_id)
