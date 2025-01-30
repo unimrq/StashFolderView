@@ -12,6 +12,6 @@ ENV password=none
 ENV api_key=none
 
 # 启动 Flask 应用
-CMD ["gunicorn", "-w", "12", "-b", "-t", "10","0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "app:app", "-c", "./gunicorn.conf.py"]
 
 
