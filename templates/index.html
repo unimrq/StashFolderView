@@ -132,7 +132,7 @@
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
                         <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
                             <div class="folder-bar"
-                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} 'var(--folder-like-color)' {% else %} transparent {% endif %};
+                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
                                 <span style="color: {% if folder_read == 0 or folder_like == 1 %} 'var(--text-color)' {% else %} #777 {% endif %};">{{ folder.relative_path }}</span>
                             </div>

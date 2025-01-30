@@ -1,27 +1,29 @@
 # 预览
 ![img.png](static/images/img.png)
-![img_1.png](static/images/img_1.png)
 ![img_2.png](static/images/img_2.png)
+![img_1.png](static/images/img_1.png)
+
 # 特性
-1. 文件夹式浏览，瀑布流显示图片；
+1. 文件夹式浏览，瀑布流显示图片，实现图片收藏；
 2. 文件夹级别已读、收藏和删除标记；
 3. 联动stash实现图片、视频收藏；
 4. 实现简易的登录界面；
 5. 适配移动端；
 6. 支持docker部署；
 7. 实现收藏图片展示、收藏文件夹展示；
+
 # 部署
 ## 1. 部署stash
 如果您没有部署stash，请先参考原仓库https://github.com/stashapp/stash
 ## 2. 获取stash_api
 设置stash的账户凭证并生成stash_api
-![img_3.png](static/images/img_3.png)
+
 ## 3. 部署stash-folder-view
 ``docker run --restart=always -v /app/data:/app/data -e base_url=[stash_url] -e jump_url=[stash_url] -e username=[username] -e password=[password] -e api_key=[stash_api] -p 8000:8000 -d unimrq/stash-folder-view``
 
 stash_url: 容器访问stash的地址，需要保留"/"；例如"http://192.168.1.51:12001/"
 
-jump_url: 图片跳转链接的stash基础地址，留空默认与stash_url相同
+jump_url: 图片跳转链接的stash地址，留空默认与stash_url相同
 
 username: stash-folder-view登录用户名，不必与stash的凭证相同
 
