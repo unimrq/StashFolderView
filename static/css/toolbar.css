@@ -1,8 +1,8 @@
 /* 顶部工具栏 */
 .toolbar {
-    background-color: #5a79ba;
+    background-color: var(--primary-color);
     font-size: 16px;
-    color: white;
+    color: var(--icon-color);
     padding: 10px 10px;
     width: 100%;
     height: 50px;
@@ -22,11 +22,28 @@
 }
 
 .delete-btn i:hover {
-    color: darkred; /* 鼠标悬停时显示暗红色 */
+    color: black; /* 鼠标悬停时显示暗红色 */
+}
+
+.like-btn:hover i {
+    /*background-color: red;*/
+    color: red; /* 悬停时变红 */
+}
+
+.like-btn,
+.check-btn{
+    margin-left: 10px; /* 控制两个按钮之间的间距 */
+    cursor: pointer; /* 鼠标悬停时显示可点击 */
+}
+
+.home-btn{
+    font-size: 22px;
+    margin-left: 10px;
+    cursor: pointer;
 }
 
 /* 退出按钮样式 */
-.logout-btn {
+.setting-btn {
     cursor: pointer;
     margin-left: 10px; /* 控制两个按钮之间的间距 */
     /*{#margin-bottom: 10px;#}*/
@@ -36,33 +53,8 @@
 }
 
 /* 图标大小和颜色 */
-.logout-btn i {
-    color: gray; /* 默认颜色 */
+.setting i {
     transition: color 0.3s ease;
-}
-
-/* 悬停时的颜色变化 */
-.logout-btn:hover i {
-    color: red; /* 悬停时变红 */
-}
-
-
-.like-btn,
-.check-btn{
-    margin-left: 10px; /* 控制两个按钮之间的间距 */
-    cursor: pointer; /* 鼠标悬停时显示可点击 */
-}
-
-.home-btn{
-    font-size: 24px;
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-.network-btn{
-    font-size: 24px;
-    margin-left: 8px;
-    cursor: pointer;
 }
 
 .like-btn i,
@@ -71,7 +63,7 @@
 }
 
 .menu-btn {
-    font-size: 30px;
+    font-size: 26px;
     margin-left: 20px;
     cursor: pointer;
 }

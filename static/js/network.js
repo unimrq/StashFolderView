@@ -8,11 +8,13 @@ function toggle_network_status(folder_id) {
         icon.classList.remove('fas', 'fa-desktop');
         icon.classList.add('fa', 'fa-globe');
         updateNetworkStatus(1);
+        window.location.href = '/folders?id=' + folder_id ;
     } else {
         // 如果当前是未点赞状态，点击后变为已点赞
         icon.classList.remove('fa', 'fa-globe');
         icon.classList.add('fas', 'fa-desktop');
         updateNetworkStatus(0);
+        window.location.href = '/folders?id=' + folder_id ;
     }
 }
 

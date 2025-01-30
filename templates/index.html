@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="/static/css/folders-container.css">
     <link rel="stylesheet" href="/static/css/media.css">
     <link rel="stylesheet" href="/static/css/toolbar.css">
+    <link rel="stylesheet" href="/static/css/light-theme.css">
+    <link rel="stylesheet" href="/static/css/breadcrumb.css">
+    <link rel="stylesheet" href="/static/css/pop_menu.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,18 +36,16 @@
     </style>
 </head>
 <body>
+
 <!-- 顶部工具栏 -->
 <div class="toolbar">
     <div>
-        <span class="menu-btn" id="menu-btn"><i class="fa-solid fa-bars"></i></span>
+        <span class="menu-btn" id="menu-btn"><i class="fa-solid fa-list" style="color:var(--icon-color)"></i></span>
         <!-- 新增主页按钮 -->
         <a href="{{ url_for('index') }}" id="home-icon" class="home-btn">
-            <i class="fas fa-home" style="color:white"></i> <!-- 白色房子图标 -->
+            <i class="fas fa-home" style="color:var(--icon-color)"></i> <!-- 白色房子图标 -->
         </a>
-        <!-- 新增网络切换按钮 -->
-        <a href="{{ url_for('index', id=folder_id) }}" class="network-btn" onclick=toggle_network_status({{ folder_id }})>
-            <i id="network-toggle" class="{% if network_status == 0 %}fas fa-desktop{% else %}fa fa-globe{% endif %}" style="color:white"></i>
-        </a>
+
     </div>
 
     <span class="folders_name">{{ folder_name }}</span>
@@ -53,25 +54,57 @@
         <span id="like-icon-{{ folder_id }}" class="like-btn"
               onclick="toggleLike({{ folder_id }})">
             <i id="heart-icon-{{ folder_id }}"
-               class="{% if folder_details[folder_id].like_status == 1 %}fas fa-heart{% else %}far fa-heart{% endif %}"
-               style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}white{% endif %};"></i>
+               class="{% if folder_details[folder_id].like_status == 1 %}fas fa-heart{% else %}fa-solid fa-heart{% endif %}"
+               style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 删除图标 (垃圾桶形状) -->
         <span id="delete-icon-{{ folder_id }}" class="delete-btn" onclick="toggleDelete({{ folder_id }})">
             <i id="delete-icon-{{ folder_id }}-icon"
                class="fa fa-trash" datatype="{{ folder_details[folder_id].delete_status }}"
-               style="color: {% if folder_details[folder_id].delete_status == 1 %}black{% else %}white{% endif %};"></i>
+               style="color: {% if folder_details[folder_id].delete_status == 1 %}black{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 对勾图标 -->
         <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
                 <i id="check-icon-{{ folder_id }}-icon"
                    class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
-                   style="color: {% if folder_details[folder_id].read_status == 1 %}lightgreen{% else %}white{% endif %};"></i>
+                   style="color: {% if folder_details[folder_id].read_status == 1 %}darkgreen{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 退出图标 -->
-        <span id="logout-icon" class="logout-btn" onclick="logout()">
-            <i class="fas fa-sign-out-alt" style="color:white"></i> <!-- 只显示图标 -->
+        <span id="setting-icon" class="setting-btn" onclick="toggleMenu()">
+            <i class="fa-solid fa-gear" style="color:var(--icon-color)"></i> <!-- 只显示图标 -->
         </span>
+        <div id="popupMenu">
+            <ul>
+                <li>
+                    <i id="new-window-icon" class="fa-regular fa-window-restore" style="color:var(--icon-color)"></i>
+                    <span>新窗口打开</span>
+                    <label class="folder_control_label">
+                        <input type="checkbox" id="openInNewWindow"/>
+                    </label>
+                </li>
+                <li>
+                    <i id="hide-read-icon" class="fa-regular fa-eye-slash" style="color:var(--icon-color)"></i>
+                    <span>收起已读</span>
+                    <label class="folder_control_label">
+                        <input type="checkbox" id="toggleRead"/>
+                    </label>
+                </li>
+                <li onclick=toggle_network_status({{ folder_id }})>
+                    <!-- 新增网络切换按钮 -->
+                    <a class="network-btn" >
+                        <i id="network-toggle" class="{% if network_status == 0 %}fas fa-desktop{% else %}fa fa-globe{% endif %}" style="color:var(--icon-color)"></i>
+                    </a>
+                    <span>外网访问</span>
+                </li>
+                <li onclick="logout()">
+                    <!-- 退出图标 -->
+                    <span id="logout-icon" class="logout-btn" >
+                        <i class="fas fa-sign-out-alt" style="color:var(--icon-color)"></i> <!-- 只显示图标 -->
+                    </span>
+                    <span>退出登录</span>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </div>
@@ -85,14 +118,10 @@
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
     <div class="folders-container" id="folders-container">
         <div class="folder_control">
-            <label class="folder_control_label">
-                <input type="checkbox" id="openInNewWindow"/> 新窗口
-            </label>
+
 
             <!-- 收起/展开已读的复选框 -->
-            <label class="folder_control_label">
-                <input type="checkbox" id="toggleRead"/> 收起已读
-            </label>
+
         </div>
         <div class="folders_draw">
             <ul id="folderList">
@@ -106,9 +135,9 @@
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
                         <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
                             <div class="folder-bar"
-                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #ff6464 {% else %} transparent {% endif %};
+                                 style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} 'var(--folder-like-color)' {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
-                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} darkgreen {% endif %};">{{ folder.relative_path }}</span>
+                                <span style="color: {% if folder_read == 0 or folder_like == 1 %} 'var(--icon-color)' {% else %} 'var(--text-color-read)' {% endif %};">{{ folder.relative_path }}</span>
                             </div>
                         </a>
                     </li>
@@ -120,15 +149,16 @@
 
     <!-- 右侧：文件内容展示 -->
     <div class="files-container" id="files-container">
-        {% if all_urls %}
-            <div class="breadcrumb" id="breadcrumb">
-                当前路径：
+        <div class="breadcrumb" id="breadcrumb">
+            <div class="folder_path">
                 <a href="{{ url_for('index', id=None) }}">根目录</a>
                 {% for path_part, part_folder_id in current_path_parts %}
                     <span>/</span>
                     <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
                 {% endfor %}
             </div>
+        </div>
+        {% if all_urls %}
             <div class="grid-container">
                 <div class="image-box" id="masonry-grid">
                     {% for url, link, is_video, file_id, file_like in all_urls %}
@@ -166,7 +196,6 @@
         {% else %}
             {% if folder_has_subfolders %}
                 <div class="folders_view">
-
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}
                         <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
@@ -177,14 +206,6 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="breadcrumb" id="breadcrumb">
-                    <span>当前路径:</span>
-                    <a href="{{ url_for('index', id=None) }}">根目录</a>
-                    {% for path_part, part_folder_id in current_path_parts %}
-                        <span>/</span>
-                        <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
-                    {% endfor %}
-                </div>
                 <div class="no-media-message">无媒体文件</div>
             {% endif %}
 
@@ -214,6 +235,14 @@
             window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
         } else {
             window.location.href = "{{ url_for('index') }}?id=" + folder_id;
+        }
+    }
+    function toggleMenu() {
+        var menu = document.getElementById('popupMenu');
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+        } else {
+            menu.style.display = 'none';
         }
     }
 </script>

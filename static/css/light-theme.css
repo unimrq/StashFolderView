@@ -1,0 +1,12 @@
+/* 默认主题：浅色主题 */
+:root {
+    --primary-color: #697EBF;
+    --secondary-color: #5a79ba;
+    --background-color: #f0f0f0;
+    --text-color: #fff;
+    --text-color-read: darkgreen;
+    --icon-color: #fff;
+    --folder-like-color: #ff6464;
+    --text-color-contrast: black;
+    --highlighted:#B0BEDE;
+}

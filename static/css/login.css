@@ -26,7 +26,7 @@ body {
 /* 标题样式 */
 h2 {
   font-size: 32px;
-  color: #697EBF;
+  color: var(--primary-color);
   margin-bottom: 20px;
   font-weight: 600;
 }
@@ -41,7 +41,7 @@ h2 {
 label {
   display: block;
   margin-bottom: 5px;
-  color: #697EBF;
+  color: var(--primary-color);
   /*font-weight: bold; !* Added font-weight property *!*/
 }
 
@@ -59,7 +59,7 @@ input[type="text"], input[type="password"] {
 
 /* 输入框聚焦效果 */
 input[type="text"]:focus, input[type="password"]:focus {
-  border-color: #697EBF;
+  border-color: var(--primary-color);
   outline: none;
   box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
 }
@@ -68,8 +68,8 @@ input[type="text"]:focus, input[type="password"]:focus {
 button {
   width: 100%;
   padding: 12px;
-  background-color: #697EBF;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   border: none;
   border-radius: 4px;
   font-size: 16px;
@@ -78,7 +78,7 @@ button {
 }
 
 button:hover {
-  background-color: #5a79ba;
+  background-color: var(--secondary-color);
 }
 
 /* 错误信息 */

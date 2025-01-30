@@ -10,20 +10,21 @@
     transition: transform 0.3s ease;
     border-right: 1px solid #ccc; /* 右侧边框 */
     flex-direction: column;
-    background: #dbe2ef;
+    background: var(--background-color);
     overflow-y: auto;
-    scrollbar-color: #697EBF #dbe2ef;
+    scrollbar-color: var(--primary-color) var(--background-color);
 
 }
-::-webkit-scrollbar-track {
-    background: #B0BEDE;
-  }
+
 
 .folders-container h2 {
     margin-top: 0;
 }
 .folders_draw{
     width: 100%;
+}
+#folderList{
+    margin-top: 20px;
 }
 
 .folder-bar {
@@ -34,7 +35,7 @@
     padding: 10px 20px 10px 20px;
     margin: 5px 0;
     /*font-size: 14px;*/
-    border-radius: 8px;
+        border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡效果 */
 
@@ -65,6 +66,7 @@
     display: flex;
     /*grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); !* Adjust column size based on screen width *!*/
     gap: 20px;  /* Space between items */
+    margin-top: 20px;
     padding-left: 20px;
     /*{#padding-right: 50px;#}*/
     flex-wrap: wrap;
@@ -87,7 +89,7 @@
 
 .folder-icon i {
     font-size: 3rem;  /* Enlarged folder icon */
-    color: #7098da;   /* Green folder color */
+    color: var(--primary-color);   /* Green folder color */
     margin-bottom: 10px;
     cursor: pointer;
     transition: transform 0.2s ease;  /* 可选：平滑的悬停效果 */
@@ -102,45 +104,16 @@
     width: 100px;
     max-height: 80px;
     font-size: 14px;
-    color: black;
+    color: var(--text-color-contrast);
     margin-top: 5px;
     /*line-height: 1.2;  !* 设置行高，避免文字过紧 *!*/
 
 }
 
-/* 给 folder_control 添加一些布局样式 */
-.folder_control {
-    /*margin-top: 20px;*/
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    align-items: start;
-    gap: 20px;
-    padding-top: 15px;
-    border-radius: 8px;
-    margin-left: 28px;
-    font-size: 14px;
-    /*{#margin: 20px 0;#}*/
-}
 
-@media (max-width: 1100px) {
-    .folder_control {
-        flex-direction: column; /* 窗口宽度小于600px时，变成横向排列 */
-        gap: 5px; /* 横向排列时的间距 */
-    }
-}
 
-/* 控制复选框的大小和样式 */
-.folder_control_label input[type="checkbox"] {
-    margin-right: 3px;
-    /*margin-top: 15px;*/
-    /*width: 18px;*/
-    /*height: 18px;*/
-    transform: translateY(2px);
-    accent-color: #4CAF50; /* 设置复选框的颜色 */
-}
 
 .highlighted {
-    background-color: #B0BEDE; /* Change this color as needed */
+    background-color: var(--highlighted); /* Change this color as needed */
     border-radius: 8px;
 }

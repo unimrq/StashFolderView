@@ -1,0 +1,53 @@
+.breadcrumb {
+    width: 90%;
+    /*margin-left: 30px;*/
+    /*margin-right: 20px;*/
+    /*{#padding-top: 10px;#}*/
+    justify-self: center;
+    /*padding-bottom: 20px;*/
+    padding: 10px;
+    text-align: start;
+    font-size: 16px;
+    max-height: 70px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 15px;  /* 设置圆角边框 */
+    /*background-color: #333333;*/
+
+}
+@media (max-width: 630px) {
+    .breadcrumb{
+        width: 80%;
+
+    }
+}
+
+/*.breadcrumb {*/
+/*    width: 100%;*/
+/*    height: 40px;*/
+/*    background-color: #f4f4f4;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 15px;  !* 设置圆角边框 *!*/
+/*    padding: 5px 10px;*/
+/*    font-family: Arial, sans-serif;*/
+/*    font-size: 16px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    box-sizing: border-box;*/
+/*    cursor: not-allowed; !* 防止点击和输入 *!*/
+/*}*/
+
+.breadcrumb a {
+    text-decoration: none;
+    color: black;
+}
+.folder_path {
+    /*padding-right: calc(20%);*/
+    white-space: nowrap; /* 禁止换行 */
+    text-overflow: ellipsis; /* 文字溢出时显示省略号 */
+    overflow: hidden; /* 隐藏溢出的文字 */
+}
+.breadcrumb span {
+    margin: 0 5px;
+
+}
