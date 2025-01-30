@@ -208,19 +208,18 @@ def index():
     if not check_login():
         return redirect(url_for('home'))
     # 本页面参数
-    folder_id = request.args.get('id', type=int)
+    folder_id = request.args.get('id')
     if not folder_id:
-        folder_id = 0
+        folder_id = 'home'
     page = request.args.get('page', default=1, type=int)  # 当前页，默认第一页
     per_page = 50
     offset = (page - 1) * per_page  # 计算偏移量
 
     # 判断文件夹是否有子文件夹
     # folder_has_subfolders = has_subfolders(folder_id)
-    parent_folder_id = 0
-
-    # 查询父文件夹以及本文件夹路径
-    if folder_id != 0:
+    parent_folder_id = 'home'
+    # 查询z文件夹以及本文件夹路径
+    if folder_id != 'home':
         folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
         folder_name = folder_path.split('/')[-1]
         # 查询子文件夹
@@ -239,7 +238,8 @@ def index():
     else:
         folder_has_subfolders = True
         root_folders = stash_query.find_subdirectory_by_id(folder_id)
-        root_folders.insert(0, {'folder_id': 1, 'relative_path': '收藏'})
+        # print(root_folders)
+        root_folders.insert(0, {'folder_id': 'favorites', 'relative_path': '收藏', 'parent_folder_id': 'home'})
         folder_name = '根目录'
 
     # 获取当前路径的各个部分
@@ -247,7 +247,7 @@ def index():
     current_folder_id = folder_id
     while current_folder_id:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
-        if parent_folder_id:
+        if parent_folder_id != 'home':
             current_path_parts.insert(0, (folder_path, current_folder_id))
             current_folder_id = parent_folder_id
         else:
@@ -256,11 +256,11 @@ def index():
     if folder_id:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
     # print(parent_folder_id)
-    # print(current_path_parts)
+    print(current_path_parts)
 
     # 收藏
     if folder_id:
-        if folder_id == 2:
+        if folder_id == 'favorite_files':
             # print("Im in folder_id 2")
             file_ids = stash_query.get_favorite_files(int(per_page / 2), int(offset / 2))
             total_files = stash_query.get_favorite_num()
@@ -285,6 +285,9 @@ def index():
                 image_rating = stash_query.get_file_status(image_id, False)
                 all_urls.append((image_url, image_link, False, image_id, image_rating))
         # 获取该文件夹下的所有文件ID（分页）
+        elif folder_id == 'favorites' or folder_id == 'favorite_folders' or folder_id == 'home':
+            all_urls = []
+            total_pages = 0
         else:
             file_ids = stash_query.find_file_id_by_folder_id(folder_id, per_page, offset)
             total_files = stash_query.find_file_num_by_folder_id(folder_id)
@@ -317,7 +320,8 @@ def index():
     folder_has_medias = len(all_urls) > 0
 
     folder_details = folder_status_process(folder_id, root_folders, folder_has_subfolders)
-
+    print(folder_details)
+    # print(root_folders)
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
                            current_path_parts=current_path_parts, network_status = network_status,

@@ -98,14 +98,14 @@ def find_directory_by_path(path):
 
 
 def find_directory_by_id(folder_id):
-    if folder_id == 0:
-        folder_id = None
-    if folder_id == 1:
-        return "/收藏", None
-    if folder_id == 2:
-        return "/收藏/文件", 1
-    if folder_id == 3:
-        return '/收藏/文件夹', 1
+    if folder_id == 'home':
+        return "根目录", 'home'
+    if folder_id == 'favorites':
+        return "/收藏", 'home'
+    if folder_id == 'favorite_files':
+        return "/收藏/文件", 'favorites'
+    if folder_id == 'favorite_folders':
+        return '/收藏/文件夹', 'favorites'
     json = {
         "query": f"""
                 mutation {{
@@ -123,26 +123,28 @@ def find_directory_by_id(folder_id):
     # print(response.status_code)
     if response.status_code == 200:
         results = response.json()['data']['querySQL']['rows'][0]
-        return [results[0], results[1] if results[1] is not None else 0]
+        return [results[0], results[1] if results[1] is not None else 'home']
     else:
         return None
 
 
 def find_subdirectory_by_id(folder_id=None):
-    if folder_id == 1:
+    if folder_id == 'favorites':
         folders = [{
-            'folder_id': 2,
+            'folder_id': 'favorite_files',
             'folder_path': '/收藏/文件',
-            'parent_folder_id': 1,
+            'parent_folder_id': 'favorites',
             'relative_path': '文件',
         }, {
-            'folder_id': 3,
+            'folder_id': 'favorite_folders',
             'folder_path': '/收藏/文件夹',
-            'parent_folder_id': 1,
+            'parent_folder_id': 'favorites',
             'relative_path': '文件夹',
         }]
         return folders
-    if folder_id == 3:
+    if folder_id == 'favorite_files':
+        return []
+    if folder_id == 'favorite_folders':
         conn1 = sqlite3.connect('data/folders.db')
         cursor = conn1.cursor()
         cursor.execute("SELECT folder_id FROM folders WHERE like_status = 1")
@@ -156,13 +158,13 @@ def find_subdirectory_by_id(folder_id=None):
                 folders.append({
                     'folder_id': folder_id[0],
                     'folder_path': folder_path,
-                    'parent_folder_id': 3,
+                    'parent_folder_id': 'favorite_folders',
                     'relative_path': folder_path.split('/')[-1],
                 })
                 # print(folders)
         conn1.close()
         return folders
-    if folder_id == 0:
+    if folder_id == 'home':
         json = {
             "query": f"""
                     mutation {{
@@ -198,7 +200,7 @@ def find_subdirectory_by_id(folder_id=None):
         for row in rows:
             folder_id, folder_path, parent_folder_id = row
             if parent_folder_id is None:
-                parent_folder_id = 0
+                parent_folder_id = 'home'
             folders.append({
                 'folder_id': folder_id,
                 'folder_path': folder_path,

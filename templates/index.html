@@ -60,19 +60,19 @@
 
     <div class="icon-btn">
         <span id="like-icon-{{ folder_id }}" class="like-btn"
-              onclick="toggleLike({{ folder_id }})">
+              onclick="toggleLike('{{ folder_id }}')">
             <i id="heart-icon-{{ folder_id }}"
                class="{% if folder_details[folder_id].like_status == 1 %}fas fa-heart{% else %}fa-solid fa-heart{% endif %}"
                style="color: {% if folder_details[folder_id].like_status == 1 %}red{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 删除图标 (垃圾桶形状) -->
-        <span id="delete-icon-{{ folder_id }}" class="delete-btn" onclick="toggleDelete({{ folder_id }})">
+        <span id="delete-icon-{{ folder_id }}" class="delete-btn" onclick="toggleDelete('{{ folder_id }}')">
             <i id="delete-icon-{{ folder_id }}-icon"
                class="fa fa-trash" datatype="{{ folder_details[folder_id].delete_status }}"
                style="color: {% if folder_details[folder_id].delete_status == 1 %}black{% else %}'var(--icon-color)'{% endif %};"></i>
         </span>
         <!-- 对勾图标 -->
-        <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus({{ folder_id }})">
+        <span id="check-icon-{{ folder_id }}" class="check-btn" onclick="toggleReadStatus('{{ folder_id }}')">
                 <i id="check-icon-{{ folder_id }}-icon"
                    class="{% if folder_details[folder_id].read_status == 1 %}fas fa-check-square{% else %}far fa-check-square{% endif %}"
                    style="color: {% if folder_details[folder_id].read_status == 1 %}lightgray{% else %}'var(--icon-color)'{% endif %};"></i>
@@ -139,7 +139,7 @@
                     <li id="{{ folder.folder_id }}"
                         class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}"
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
-                        <a onclick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
+                        <a onclick="goToFolder('{{ folder.folder_id }}', '{{ folder.parent_folder_id }}')">
                             <div class="folder-bar"
                                  style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
@@ -205,7 +205,7 @@
                     <!-- 子文件夹图标 -->
                     {% for folder in root_folders %}
                         <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
-                           onClick="goToFolder({{ folder.folder_id }}, {{ folder.parent_folder_id }})">
+                           onClick="goToFolder('{{ folder.folder_id }}', '{{ folder.parent_folder_id }}')">
                             <i class="fas fa-folder"></i> <!-- 文件夹图标 -->
                             <span>{{ folder.relative_path | truncate(25) }}</span>
                         </a>
@@ -237,9 +237,11 @@
 <script src="/static/js/network.js"></script>
 <script>
     function goToFolder(folder_id, parent_folder_id) {
-        if (parent_folder_id === 3 || document.getElementById('openInNewWindow').checked) {
+        {#console.log(folder_id)#}
+        if (parent_folder_id === 'favorite_folders' || document.getElementById('openInNewWindow').checked) {
             window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
         } else {
+            console.log("{{ url_for('index') }}?id=" + folder_id)
             window.location.href = "{{ url_for('index') }}?id=" + folder_id;
         }
     }
