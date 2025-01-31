@@ -205,11 +205,20 @@
             {% if folder_has_subfolders %}
                 <div class="folders_view">
                     <!-- 子文件夹图标 -->
+{#                    <div class="folder-bar"#}
+{#                         style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} transparent {% endif %};#}
+{#                                 {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">#}
+{#                        <span style="color: {% if folder_read == 0 or folder_like == 1 %} 'var(--text-color)' {% else %} #777 {% endif %};">{{ folder.relative_path }}</span>#}
+{#                    </div>#}
                     {% for folder in root_folders %}
+                        {% set folder_read = folder_details[folder.folder_id].read_status %}
+                        {% set folder_like = folder_details[folder.folder_id].like_status %}
+                        {% set folder_delete = folder_details[folder.folder_id].delete_status %}
                         <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
                            onClick="goToFolder('{{ folder.folder_id }}', '{{ folder.parent_folder_id }}')">
-                            <i class="fas fa-folder"></i> <!-- 文件夹图标 -->
-                            <span>{{ folder.relative_path | truncate(25) }}</span>
+                            <i class="fas fa-folder" style="color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} 'var(--primary-color)' {% endif %};
+                                 {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};"></i> <!-- 文件夹图标 -->
+                            <span style="color: {% if folder_read == 0 or folder_like == 1 %} 'var(--text-color)' {% else %} #777 {% endif %};">{{ folder.relative_path | truncate(25) }}</span>
                         </a>
                     {% endfor %}
                 </div>

@@ -1,12 +1,3 @@
-// if (folder_id) {
-//     // 获取对应的元素
-//     var element = document.getElementById(folder_id);
-//     if (element) {
-//         // 滚动到该元素
-//         element.scrollIntoView({ behavior: "smooth", block: "center" });
-//     }
-// }
-
 // {#const go_folderId = document.getElementById('folder-icon').getAttribute('data-folder-id');#}
 
 const toggleReadCheckbox = document.getElementById('toggleRead');
@@ -61,13 +52,16 @@ window.onload = function() {
     if (storedFolderId) {
         // 获取对应的元素
         var element = document.getElementById(storedFolderId);
-        var folderRelativePath = element.getAttribute("data-folder-relative-path");
+        if (element){
+            var folderRelativePath = element.getAttribute("data-folder-relative-path");
 
-        if (element && folderRelativePath !== '上一级') {
-            // 滚动到该元素
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-            element.classList.toggle("highlighted");
+            if (folderRelativePath !== '上一级') {
+                // 滚动到该元素
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
+                element.classList.toggle("highlighted");
+            }
         }
+
     }
     localStorage.setItem('folder_id', folder_id);
 };
