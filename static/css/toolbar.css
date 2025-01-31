@@ -92,4 +92,7 @@
         display: none;
 
     }
+    .menu-btn {
+        margin-left: 10px;
+    }
 }

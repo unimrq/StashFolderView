@@ -219,8 +219,9 @@ def index():
     # folder_has_subfolders = has_subfolders(folder_id)
     parent_folder_id = 'home'
     # 查询z文件夹以及本文件夹路径
+    folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
     if folder_id != 'home':
-        folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
+
         folder_name = folder_path.split('/')[-1]
         # 查询子文件夹
         subdirectories = stash_query.find_subdirectory_by_id(folder_id)
@@ -245,18 +246,31 @@ def index():
     # 获取当前路径的各个部分
     current_path_parts = []
     current_folder_id = folder_id
-    while current_folder_id:
+    count = 0
+    while current_folder_id != 'home' and count < 5:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
+        relative_path = folder_path.split('/')[-1]
+        if len(relative_path) > 15:
+            relative_path = relative_path[:5] + "..." + relative_path[-5:]
+        # print(relative_path)
+        # relative_path += '/'
         if parent_folder_id != 'home':
-            current_path_parts.insert(0, (folder_path, current_folder_id))
+            current_path_parts.insert(0, (relative_path, current_folder_id))
             current_folder_id = parent_folder_id
         else:
-            current_path_parts.insert(0, (folder_path, current_folder_id))
+            current_path_parts.insert(0, (relative_path, current_folder_id))
             break
-    if folder_id:
-        folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
+        count += 1
+    if count < 5:
+        current_path_parts.insert(0, ('根目录', 'home'))
+    else:
+        current_path_parts.insert(0, ('根目录...', 'home'))
+    # if len(current_path_parts) > 2:
+    #     current_path_parts = current_path_parts[-3:0]
+    # if folder_id:
+    #     folder_path, parent_folder_id = stash_query.find_directory_by_id(folder_id)
     # print(parent_folder_id)
-    print(current_path_parts)
+    # print("current_path" + str(current_path_parts))
 
     # 收藏
     if folder_id:

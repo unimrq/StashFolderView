@@ -157,10 +157,12 @@
     <div class="files-container" id="files-container">
         <div class="breadcrumb" id="breadcrumb">
             <div class="folder_path">
-                <a href="{{ url_for('index', id=None) }}">根目录</a>
                 {% for path_part, part_folder_id in current_path_parts %}
-                    <span>/</span>
-                    <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part.split('/')[-1] }}</a>
+{#                    <span>/</span>#}
+                    <a href="{{ url_for('index', id=part_folder_id) }}">{{ path_part }}</a>
+                    {% if not loop.last %}
+                        <span>/</span>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -238,7 +240,7 @@
 <script>
     function goToFolder(folder_id, parent_folder_id) {
         {#console.log(folder_id)#}
-        if (parent_folder_id === 'favorite_folders' || document.getElementById('openInNewWindow').checked) {
+        if (document.getElementById('openInNewWindow').checked) {
             window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
         } else {
             console.log("{{ url_for('index') }}?id=" + folder_id)
