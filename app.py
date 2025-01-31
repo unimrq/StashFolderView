@@ -118,7 +118,7 @@ def update_network_status():
     global network_status
     data = request.get_json()
     network_status = int(data['network_status'])
-    print("network_status", network_status)
+    # print("network_status", network_status)
 
     return jsonify({'success': True})
 
@@ -334,7 +334,7 @@ def index():
     folder_has_medias = len(all_urls) > 0
 
     folder_details = folder_status_process(folder_id, root_folders, folder_has_subfolders)
-    print(folder_details)
+    # print(folder_details)
     # print(root_folders)
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
