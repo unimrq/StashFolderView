@@ -86,9 +86,9 @@
             <ul>
                 <li>
                     <i id="new-window-icon" class="fa-regular fa-window-restore" style="color:var(--primary-color)"></i>
-                    <span>新窗口打开</span>
+                    <span>筛选视频</span>
                     <label class="folder_control_label">
-                        <input type="checkbox" id="openInNewWindow"/>
+                        <input type="checkbox" id="select-video"/>
                     </label>
                 </li>
                 <li>
@@ -271,6 +271,21 @@
     function goToFolder(folder_id) {
         window.location.href = "{{ url_for('index') }}?id=" + folder_id;
     }
+    const checkbox = document.getElementById('select-video');
+
+    checkbox.addEventListener('change', function() {
+        if (checkbox.checked) {
+            const gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach(item => {
+                // 如果不是 .video 类的元素，则隐藏它
+                if (!item.classList.contains('video')) {
+                item.style.display = 'none';
+                }
+            });
+        } else {
+            location.reload();
+        }
+    });
     function toggleMenu() {
         var menu = document.getElementById('popupMenu');
         if (menu.style.display === 'none' || menu.style.display === '') {
