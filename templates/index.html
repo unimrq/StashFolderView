@@ -196,14 +196,6 @@
                         <button class="nav-btn next-btn">&gt;</button>
                         <div class="modal-content">
                             <img id="preview-image" src="" alt="Preview Image">
-                            <div class="pre-like-icon" id="like-{{ file_id }}" data-liked="{{ file_like }}"
-                                 onclick="toggleFileLike('{{ file_id }}', '{{ is_video }}')">
-                                {% if file_like == 100 %}
-                                    <i class="fas fa-heart"></i> <!-- 红色爱心 -->
-                                {% else %}
-                                    <i class="far fa-heart"></i> <!-- 空的爱心 -->
-                                {% endif %}
-                            </div>
                         </div>
                         <div id="image-count" class="image-count">1 / {{ all_urls | length}}</div>
                     </div>

@@ -3,6 +3,17 @@ let currentImageIndex = 0;
 let scale = 1;
 let startDistance = 0;
 let startScale = 1;
+// 定义拖动的变量
+let isLongPress = false;
+let startX, startY;
+let offsetX = 0, offsetY = 0;
+let startOffsetX = 0;
+let startOffsetY = 0;
+let lastX = 0;
+let lastY = 0;
+let pressTimer;
+let isTouch = false; // 标记是否为触摸事件
+
 
 const previewImage = document.getElementById('preview-image');
 const modal = document.getElementById('preview-modal');
@@ -14,7 +25,7 @@ const imageCount = document.getElementById('image-count');
 function openPreview(index0, is_video){
     currentImageIndex = index0;
     if (is_video === 'False'){
-        console.log("image_click")
+        // console.log("image_click")
         previewImage.src = links[currentImageIndex];
         modal.style.display = 'flex';
         scale = 1;
@@ -100,6 +111,11 @@ previewImage.addEventListener('touchend', (e) => {
 
 // 监听鼠标滚轮缩放
 previewImage.addEventListener('wheel', (e) => {
+    // 如果没有按住 Ctrl 键，则不进行缩放
+    if (!e.ctrlKey) {
+        return;
+    }
+
     e.preventDefault(); // 防止页面滚动
 
     if (e.deltaY < 0) {
@@ -111,13 +127,120 @@ previewImage.addEventListener('wheel', (e) => {
     }
 
     // 限制缩放范围
-    scale = Math.max(1, Math.min(scale, 3)); // 设定最小缩放为1，最大为3
+    scale = Math.max(1, Math.min(scale, 5)); // 设定最小缩放为1，最大为3
 
     // 更新图片的transform属性
     previewImage.style.transform = `scale(${scale})`;
-    if (scale > 1.05){
-        previewImage.style.zIndex = 1000
-    }else {
-        previewImage.style.zIndex = 0
+});
+
+
+modal.addEventListener('mousedown', (e) => {
+    // 防止图片的默认拖动行为
+    e.preventDefault();
+
+    startX = e.clientX;
+    startY = e.clientY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+    // 设置一个定时器判断是否为长按
+    pressTimer = setTimeout(() => {
+        isLongPress = true;
+        previewImage.style.cursor = 'grabbing'; // 改为抓取样式
+    }, 100);  // 500毫秒判断为长按，可以调整这个值
+
+});
+
+// 鼠标移动时拖动图片
+modal.addEventListener('mousemove', (e) => {
+    if (isLongPress) {
+        // 计算鼠标的相对移动
+        let deltaX = e.clientX - lastX;
+        let deltaY = e.clientY - lastY;
+
+        // 根据缩放比例调整偏移量，避免移动过大
+        offsetX += deltaX / scale;
+        offsetY += deltaY / scale;
+
+        // 更新图片位置
+        previewImage.style.transform = `scale(${scale}) translate(${offsetX}px, ${offsetY}px)`;
+
+        // 更新 lastX 和 lastY，防止偏移量累加出现误差
+        lastX = e.clientX;
+        lastY = e.clientY;
+
+        if (Math.abs(offsetX) > 20 || Math.abs(offsetY) > 20){
+            // 更新图片位置
+            previewImage.style.transform = `scale(${scale}) translate(${offsetX}px, ${offsetY}px)`;
+        }
+
+    }
+});
+
+
+
+// 鼠标松开时停止拖动
+modal.addEventListener('mouseup', () => {
+    // 清除定时器
+    clearTimeout(pressTimer);
+    isLongPress = false;
+    // 更新起始偏移值
+    startOffsetX = offsetX;
+    startOffsetY = offsetY;
+    previewImage.style.cursor = 'grab'; // 恢复为抓取样式
+});
+
+modal.addEventListener('mouseleave', () => {
+    // 清除定时器
+    clearTimeout(pressTimer);
+    isLongPress = false;
+    // 更新起始偏移值
+    startOffsetX = offsetX;
+    startOffsetY = offsetY;
+    previewImage.style.cursor = 'grab'; // 恢复为抓取样式
+});
+
+// 移动端：监听触摸移动
+modal.addEventListener('touchmove', (e) => {
+    if (isLongPress && isTouch) {
+        let deltaX = e.touches[0].clientX - lastX;
+        let deltaY = e.touches[0].clientY - lastY;
+
+        // 根据缩放比例调整偏移量，避免移动过大
+        offsetX += deltaX / scale;
+        offsetY += deltaY / scale;
+
+        // 更新图片位置
+        previewImage.style.transform = `scale(${scale}) translate(${offsetX}px, ${offsetY}px)`;
+
+        // 更新 lastX 和 lastY
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    }
+});
+
+// 移动端：监听触摸结束
+modal.addEventListener('touchend', () => {
+    if (isLongPress && isTouch) {
+        // 停止拖动
+        isLongPress = false;
+        isTouch = false;
+
+        // 更新起始偏移值
+        startOffsetX = offsetX;
+        startOffsetY = offsetY;
+    }
+});
+
+// 移动端：监听触摸离开
+modal.addEventListener('touchcancel', () => {
+    if (isLongPress && isTouch) {
+        // 停止拖动
+        isLongPress = false;
+        isTouch = false;
+
+        // 更新起始偏移值
+        startOffsetX = offsetX;
+        startOffsetY = offsetY;
     }
 });

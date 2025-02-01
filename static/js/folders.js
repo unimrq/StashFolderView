@@ -55,7 +55,7 @@ window.onload = function() {
         var element = document.getElementById(storedFolderId);
         var folder_icon = document.getElementById("icon-" + storedFolderId);
         // console.log(folder_icon)
-        if (element){
+        if (element && folder_icon){
             var folderRelativePath = element.getAttribute("data-folder-relative-path");
 
             // console.log(folder_icon.getAttribute("data-folder-id"))
