@@ -4,7 +4,7 @@
     top: 50px; /* 距离页面顶部 10px */
     right: 0; /* 距离页面右侧 10px */
     border: 1px solid #ccc;
-    background-color: var(--background-color);
+    background-color: #fff;
     width: 200px;
     padding: 10px;
     /*margin-top: 10px;*/
@@ -51,8 +51,8 @@
     cursor: pointer;
 }
 
-#new-window-icon {
-    font-size: 18px;
+#select-video-icon {
+    font-size: 20px;
     margin-left: 8px;
 }
 #hide-read-icon {
