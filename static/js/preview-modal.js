@@ -77,12 +77,14 @@ previewImage.addEventListener('dblclick', (e) => {
         img_offsetX += offsetX
         img_offsetY += offsetY
         // console.log("offset", img_offsetX, img_offsetY)
+        previewImage.style.transition = 'transform 0.3s ease';
         previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
     } else {
         // 向下滚动：缩小
         scale = 1
         img_offsetX = 0
         img_offsetY = 0
+        previewImage.style.transition = 'transform 0.3s ease';
         previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
     }
 
@@ -109,6 +111,7 @@ previewImage.addEventListener('wheel', (e) => {
     scale = Math.max(1, Math.min(scale, 5)); // 设定最小缩放为1，最大为3
 
     // 更新图片的transform属性
+    previewImage.style.transition = 'transform 0.3s ease';
     previewImage.style.transform = `scale(${scale})`;
 });
 
@@ -141,6 +144,7 @@ modal.addEventListener('mousemove', (e) => {
         // // 更新 lastX 和 lastY，防止偏移量累加出现误差
         startX = e.clientX;
         startY = e.clientY;
+        previewImage.style.transition = 'none';
         previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
 
     }
@@ -160,6 +164,7 @@ previewImage.addEventListener('touchmove', function(e) {
         startY = e.touches[0].clientY
 
         // 更新图片位置
+        previewImage.style.transition = 'none';
         previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
 
         // 防止默认的触摸滚动行为
@@ -207,12 +212,14 @@ previewImage.addEventListener('touchend', function(e) {
             img_offsetX += offsetX
             img_offsetY += offsetY
             // console.log("offset", img_offsetX, img_offsetY)
+            previewImage.style.transition = 'transform 0.3s ease';
             previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
         } else {
             // 向下滚动：缩小
             scale = 1
             img_offsetX = 0
             img_offsetY = 0
+            previewImage.style.transition = 'transform 0.3s ease';
             previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
         }
     }

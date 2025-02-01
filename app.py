@@ -277,8 +277,8 @@ def index():
     while current_folder_id != 'home' and count < 5:
         folder_path, parent_folder_id = stash_query.find_directory_by_id(current_folder_id)
         relative_path = folder_path.split('/')[-1]
-        if len(relative_path) > 15:
-            relative_path = relative_path[:5] + "..." + relative_path[-5:]
+        if len(relative_path) > 20:
+            relative_path = relative_path[:8] + "..." + relative_path[-8:]
         # print(relative_path)
         # relative_path += '/'
         if parent_folder_id != 'home':
@@ -292,6 +292,8 @@ def index():
         current_path_parts.insert(0, ('根目录', 'home'))
     else:
         current_path_parts.insert(0, ('根目录...', 'home'))
+
+
     # if len(current_path_parts) > 2:
     #     current_path_parts = current_path_parts[-3:0]
     # if folder_id:
