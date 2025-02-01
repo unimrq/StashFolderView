@@ -44,7 +44,7 @@
 
 #preview-image {
     position: relative; /* 确保能够自由拖动 */
-    cursor: grab; /* 默认显示抓取指针 */
+    /*cursor: grab; !* 默认显示抓取指针 *!*/
     max-width: 100%;
     max-height: 80vh;
     transition: transform 0.25s ease;
