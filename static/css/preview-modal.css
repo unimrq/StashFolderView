@@ -93,3 +93,18 @@
     padding: 5px;
     border-radius: 5px;
 }
+
+@media (max-width: 630px) {
+    .nav-btn{
+        top: calc(100vh - 80px);
+    }
+
+    .modal-content {
+        max-width: 100%;
+    }
+
+    .close {
+        top: 10px;
+        right: 10px;
+    }
+}
