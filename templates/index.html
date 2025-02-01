@@ -7,14 +7,15 @@
     <link rel="shortcut icon" href="/static/images/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/floating-btn-menu.css">
-    <link rel="stylesheet" href="/static/css/image_heart.css">
+    <link rel="stylesheet" href="/static/css/image-heart.css">
     <link rel="stylesheet" href="/static/css/files-container.css">
     <link rel="stylesheet" href="/static/css/folders-container.css">
     <link rel="stylesheet" href="/static/css/media.css">
     <link rel="stylesheet" href="/static/css/toolbar.css">
     <link rel="stylesheet" href="/static/css/light-theme.css">
     <link rel="stylesheet" href="/static/css/breadcrumb.css">
-    <link rel="stylesheet" href="/static/css/pop_menu.css">
+    <link rel="stylesheet" href="/static/css/pop-menu.css">
+    <link rel="stylesheet" href="/static/css/preview-modal.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -125,6 +126,7 @@
     <div id="parent_folder_id" data-folder-id="{{ parent_folder_id }}"></div>
     <div id="page" data-folder-id="{{ page }}"></div>
     <div id="total_pages" data-folder-id="{{ total_pages }}"></div>
+
     <div class="folders-container" id="folders-container">
         <div class="folder_control">
 
@@ -171,7 +173,7 @@
                 <div class="image-box" id="masonry-grid">
                     {% for url, link, is_video, file_id, file_like in all_urls %}
                         <div class="grid-item {% if is_video %}video{% endif %}">
-                            <a href="{{ link }}" target="_blank">
+                            <a onclick="openPreview({{ loop.index0 }}, '{{ is_video }}')">
                                 <img src="{{ url }}" alt="图片"/>
                             </a>
                             {% if is_video %}
@@ -188,6 +190,15 @@
                             </div>
                         </div>
                     {% endfor %}
+                    <div id="preview-modal" class="modal">
+                        <span class="close">&times;</span>
+                        <button class="nav-btn prev-btn">&lt;</button>
+                        <button class="nav-btn next-btn">&gt;</button>
+                        <div class="modal-content">
+                            <img id="preview-image" src="" alt="Preview Image">
+                        </div>
+                        <div id="image-count" class="image-count">1 / {{ all_urls | length}}</div>
+                    </div>
                 </div>
                 <!-- 翻页按钮 -->
                 {% if total_pages > 1 %}
@@ -236,17 +247,19 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
 <script src="https://unpkg.com/imagesloaded@4.1.4/imagesloaded.pkgd.min.js"></script>
-<script src="/static/js/read.js"></script>
-<script src="/static/js/like.js"></script>
-<script src="/static/js/delete.js"></script>
+<script src="/static/js/folder-read.js"></script>
+<script src="/static/js/folder-like.js"></script>
+<script src="/static/js/folder-delete.js"></script>
 <script src="/static/js/floating-btn-menu.js"></script>
-<script src="/static/js/image_heart.js"></script>
+<script src="/static/js/image-heart.js"></script>
 <script src="/static/js/folders.js"></script>
-<script src="/static/js/images.js"></script>
+<script src="/static/js/images-masonry.js"></script>
 <script src="/static/js/logout.js"></script>
 <script src="/static/js/menu.js"></script>
 <script src="/static/js/network.js"></script>
+<script src="/static/js/preview-modal.js"></script>
 <script>
+    const links = {{ links | tojson }};
     function goToFolder(folder_id, parent_folder_id) {
         {#console.log(folder_id)#}
         if (document.getElementById('openInNewWindow').checked) {

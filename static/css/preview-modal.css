@@ -1,0 +1,95 @@
+/* styles.css */
+
+.gallery {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gallery-image {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gallery-image:hover {
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    justify-content: center;      /* 水平居中 */
+    align-items: center;          /* 垂直居中 */
+    margin-top: 50px;
+    z-index: 1;
+    /*padding-top: 60px;*/
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: calc(100vh - 50px);
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    margin: auto;
+    max-width: 80%;
+    max-height: 80%;
+}
+
+#preview-image {
+    max-width: 100%;
+    max-height: 80vh;
+    transition: transform 0.25s ease;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.prev-btn {
+    left: 10px;
+}
+
+.next-btn {
+    right: 10px;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 样式化图片序号显示 */
+.image-count {
+    position: absolute;
+    left: 50%;     /* 水平居中 */
+    bottom: 10px;
+    transform: translateX(-50%);  /* 精确居中 */
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);  /* 背景色透明 */
+    padding: 5px;
+    border-radius: 5px;
+}

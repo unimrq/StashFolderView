@@ -35,6 +35,7 @@ headers = {
 db = SQLAlchemy(app)
 app.debug = True
 
+
 @app.route('/image/<path:image_id>')
 def get_image(image_id):
     # 图片的外部URL
@@ -48,6 +49,22 @@ def get_image(image_id):
         return Response(response.content, mimetype='images/jpeg')
     else:
         return "Failed to retrieve images", 404
+
+
+@app.route('/big_image/<path:image_id>')
+def get_big_image(image_id):
+    # 图片的外部URL
+    full_url = base_url + f"image/{image_id}/image"
+
+    # 使用 requests 获取图片，携带cookie
+    response = requests.get(full_url, headers=headers)
+
+    if response.status_code == 200:
+        # 返回获取的图片内容
+        return Response(response.content, mimetype='images/jpeg')
+    else:
+        return "Failed to retrieve images", 404
+
 
 @app.route('/scene/<path:scene_id>')
 def get_scene(scene_id):
@@ -63,6 +80,7 @@ def get_scene(scene_id):
     else:
         return "Failed to retrieve images", 404
 
+
 @app.route('/update_like_status', methods=['POST'])
 def update_like_status():
     data = request.get_json()
@@ -77,6 +95,7 @@ def update_like_status():
     conn.close()
 
     return jsonify({'success': True})
+
 
 @app.route('/update_read_status', methods=['POST'])
 def update_read_status():
@@ -95,6 +114,7 @@ def update_read_status():
 
     # 返回成功响应
     return jsonify({'success': True})
+
 
 @app.route('/update_delete_status', methods=['POST'])
 def update_delete_status():
@@ -122,10 +142,12 @@ def update_network_status():
 
     return jsonify({'success': True})
 
+
 def generate_encrypted_string(username, password):
     combined_string = username + password
     encrypted_string = hashlib.sha256(combined_string.encode('utf-8')).hexdigest()  # 使用 SHA-256 加密
     return encrypted_string
+
 
 def check_login():
     if 'logged_in' not in session or not session['logged_in']:
@@ -146,6 +168,7 @@ def check_login():
             session.pop('login_time', None)
             return False
     return True
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -168,12 +191,14 @@ def home():
         return redirect(url_for('index'))
     return render_template('login.html')  # 返回登录页面
 
+
 @app.route('/logout')
 def logout():
     # 注销登录，清除 session
     session.pop('logged_in', None)
     session.pop('login_time', None)
     return redirect(url_for('home'))  # 重定向到登录页面
+
 
 @app.route('/update_file_like_status', methods=['POST'])
 def update_file_like_status():
@@ -201,6 +226,7 @@ def update_file_like_status():
         return jsonify(success=True)
     else:
         return jsonify(success=False, message='更新失败'), 400
+
 
 @app.route('/folders', methods=['GET'])
 def index():
@@ -238,6 +264,7 @@ def index():
         #     root_folders.insert(0, {'folder_id': parent_folder_id, 'relative_path': '上一级'})
     else:
         folder_has_subfolders = True
+        # print(folder_id)
         root_folders = stash_query.find_subdirectory_by_id(folder_id)
         # print(root_folders)
         root_folders.insert(0, {'folder_id': 'favorites', 'relative_path': '收藏', 'parent_folder_id': 'home'})
@@ -292,9 +319,9 @@ def index():
             for image_id in file_ids[0]:
                 image_url = f"/image/{image_id}"
                 if network_status == 0:
-                    image_link = base_url + f"images/{image_id}"
+                    image_link = f"/big_image/{image_id}"
                 else:
-                    image_link = jump_url + f"images/{image_id}"
+                    image_link = f"/big_image/{image_id}"
                 # image_title, image_rating = get_image_status(image_id)
                 image_rating = stash_query.get_file_status(image_id, False)
                 all_urls.append((image_url, image_link, False, image_id, image_rating))
@@ -313,9 +340,9 @@ def index():
                 if not is_video:
                     image_url = f"/image/{content_id}"
                     if network_status == 0:
-                        image_link = base_url + f"images/{content_id}"
+                        image_link = f"/big_image/{content_id}"
                     else:
-                        image_link = jump_url + f"images/{content_id}"
+                        image_link = f"/big_image/{content_id}"
                     image_rating = stash_query.get_file_status(content_id, is_video)
                     all_urls.append((image_url, image_link, is_video, content_id, image_rating))
                 else:
@@ -338,10 +365,10 @@ def index():
     # print(root_folders)
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
-                           current_path_parts=current_path_parts, network_status = network_status,
+                           current_path_parts=current_path_parts, network_status=network_status,
                            all_urls=all_urls, parent_folder_id=parent_folder_id,
                            page=page, total_pages=total_pages, folder_name=folder_name,
-                           folder_has_subfolders=folder_has_subfolders,
+                           folder_has_subfolders=folder_has_subfolders, links=[item[1] for item in all_urls],
                            folder_has_medias=folder_has_medias, base_url=base_url)
 
 
