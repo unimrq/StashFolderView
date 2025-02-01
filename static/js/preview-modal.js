@@ -14,7 +14,7 @@ let lastX = 0;
 let lastY = 0;
 let pressTimer;
 let isTouch = false; // 标记是否为触摸事件
-let lastTouchTime = 0;
+
 
 const previewImage = document.getElementById('preview-image');
 const modal = document.getElementById('preview-modal');
@@ -186,11 +186,11 @@ modal.addEventListener('mousemove', (e) => {
         // 计算鼠标的相对移动
         let deltaX = e.clientX - startX;
         let deltaY = e.clientY - startY;
-        console.log("move", e.clientX, e.clientY)
+        // console.log("move", e.clientX, e.clientY)
         // 根据缩放比例调整偏移量，避免移动过大
         img_offsetX += deltaX;
         img_offsetY += deltaY;
-        console.log("move", img_offsetX, img_offsetY)
+        // console.log("move", img_offsetX, img_offsetY)
         // 更新图片位置
         // previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
 
@@ -228,11 +228,38 @@ modal.addEventListener('mouseleave', () => {
     // previewImage.style.cursor = 'grab'; // 恢复为抓取样式
 });
 
+
+previewImage.addEventListener('touchstart', function(e) {
+    // 记录触摸起始位置
+    if (e.touches.length === 1) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }
+});
+
+previewImage.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1) {
+      // 获取滑动的距离
+      const moveX = e.touches[0].clientX - startX;
+      const moveY = e.touches[0].clientY - startY;
+
+      // 更新偏移量
+      offsetX = moveX;
+      offsetY = moveY;
+
+      // 更新图片位置
+      previewImage.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+      // 防止默认的触摸滚动行为
+      e.preventDefault();
+    }
+  });
+
 previewImage.addEventListener('touchend', function(e) {
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTouchTime;
 
-    if (timeDifference < 300 && timeDifference > 0) {
+    if (timeDifference < 500 && timeDifference > 0) {
         // 双击事件发生，时间间隔小于300ms视为双击
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
