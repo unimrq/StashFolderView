@@ -133,13 +133,9 @@ modal.addEventListener('mousemove', (e) => {
         // 计算鼠标的相对移动
         let deltaX = e.clientX - startX;
         let deltaY = e.clientY - startY;
-        // console.log("move", e.clientX, e.clientY)
         // 根据缩放比例调整偏移量，避免移动过大
         img_offsetX += deltaX;
         img_offsetY += deltaY;
-        // console.log("move", img_offsetX, img_offsetY)
-        // 更新图片位置
-        // previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
 
         // // 更新 lastX 和 lastY，防止偏移量累加出现误差
         startX = e.clientX;
@@ -153,6 +149,26 @@ modal.addEventListener('mousemove', (e) => {
     }
 });
 
+previewImage.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1) {
+        // 获取滑动的距离
+        const moveX = e.touches[0].clientX - startX;
+        const moveY = e.touches[0].clientY - startY;
+
+        // 更新偏移量
+        img_offsetX += moveX;
+        img_offsetY += moveY;
+
+        startX = e.touches[0].clientX
+        startY = e.touches[0].clientY
+
+        // 更新图片位置
+        previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
+
+        // 防止默认的触摸滚动行为
+        e.preventDefault();
+    }
+});
 
 // 鼠标松开时停止拖动
 modal.addEventListener('mouseup', () => {
@@ -176,24 +192,6 @@ previewImage.addEventListener('touchstart', function(e) {
     }
 });
 
-previewImage.addEventListener('touchmove', function(e) {
-    if (e.touches.length === 1) {
-      // 获取滑动的距离
-      const moveX = e.touches[0].clientX - startX;
-      const moveY = e.touches[0].clientY - startY;
-
-      // 更新偏移量
-      img_offsetX += moveX;
-      img_offsetY += moveY;
-
-      // 更新图片位置
-      previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
-
-      // 防止默认的触摸滚动行为
-      e.preventDefault();
-    }
-  });
-
 previewImage.addEventListener('touchend', function(e) {
     const currentTime = new Date().getTime();
     const timeDifference = currentTime - lastTouchTime;
@@ -202,7 +200,7 @@ previewImage.addEventListener('touchend', function(e) {
         // 双击事件发生，时间间隔小于300ms视为双击
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        if (scale < 9) {
+        if (scale < 10) {
             // 向上滚动：放大
             // console.log("offset1", img_offsetX, img_offsetY)
             offsetX = (centerX - e.clientX) / scale;

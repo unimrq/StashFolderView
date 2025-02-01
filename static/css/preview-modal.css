@@ -47,7 +47,7 @@
     /*cursor: grab; !* 默认显示抓取指针 *!*/
     max-width: 100%;
     max-height: 80vh;
-    transition: transform 0.25s ease;
+    transition: transform 0.1s ease;
 }
 
 .nav-btn {
