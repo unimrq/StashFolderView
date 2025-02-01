@@ -32,8 +32,9 @@ function openPreview(index0, is_video){
 // 关闭预览框
 closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
-    img_offsetX = 0
-    img_offsetY = 0
+    img_offsetX = 0;
+    img_offsetY = 0;
+    scale = 1;
 });
 
 // 上一张图片
@@ -203,8 +204,8 @@ previewImage.addEventListener('touchend', function(e) {
         if (scale < 10) {
             // 向上滚动：放大
             // console.log("offset1", img_offsetX, img_offsetY)
-            offsetX = (centerX - e.clientX) / scale;
-            offsetY = (centerY - e.clientY) / scale;
+            offsetX = (centerX - e.touches[0].clientX) / scale;
+            offsetY = (centerY - e.touches[0].clientY) / scale;
             scale *= 3;
 
             img_offsetX += offsetX
