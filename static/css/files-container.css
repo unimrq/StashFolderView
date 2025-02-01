@@ -13,11 +13,12 @@
 
 .grid-container {
     width: 100%;
-    /*{#display: flex;#}*/
+    display: flex;
+    display: -webkit-flex;
     flex-wrap: wrap;
     max-height: 100vh;
     padding-top: 20px;
-    justify-self: center;
+    justify-content: center;
     /*{#justify-content: center; !* 确保图片项在父容器内居中 *!#}*/
     gap: 10px;
     /*{#flex-direction: column;#}*/
