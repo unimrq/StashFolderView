@@ -229,7 +229,7 @@
                            onClick="goToFolder('{{ folder.folder_id }}')">
                             <i class="fas fa-folder" style="color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} #697EBF {% endif %};
                                  {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};"></i> <!-- 文件夹图标 -->
-                            <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} #777 {% endif %};">{{ folder.relative_path | truncate(25) }}</span>
+                            <span style="color: {% if folder_read == 0 or folder_like == 1 %} black {% else %} #777 {% endif %};">{{ folder.relative_path | truncate(50) }}</span>
                         </a>
                     {% endfor %}
                 </div>

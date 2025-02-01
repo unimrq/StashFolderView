@@ -142,10 +142,6 @@ modal.addEventListener('mousemove', (e) => {
         startX = e.clientX;
         startY = e.clientY;
         previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
-        // if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10){
-        //     // 更新图片位置
-        //     previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
-        // }
 
     }
 });
@@ -204,8 +200,8 @@ previewImage.addEventListener('touchend', function(e) {
         if (scale < 10) {
             // 向上滚动：放大
             // console.log("offset1", img_offsetX, img_offsetY)
-            offsetX = (centerX - e.touches[0].clientX) / scale;
-            offsetY = (centerY - e.touches[0].clientY) / scale;
+            offsetX = (centerX - e.touches[0].clientX);
+            offsetY = (centerY - e.touches[0].clientY);
             scale *= 3;
 
             img_offsetX += offsetX

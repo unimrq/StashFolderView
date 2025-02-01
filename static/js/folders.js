@@ -66,8 +66,9 @@ window.onload = function() {
                 // 滚动到该元素
                 // console.log("定位中")
                 element.scrollIntoView({ behavior: "smooth", block: "center" });
-                folder_bar.style.backgroundColor = '#B0BEDE'
-                folder_icon_item.style.color = '#07689f'
+                folder_icon_item.scrollIntoView({ behavior: "smooth", block: "center" });
+                folder_bar.style.backgroundColor = '#c86b85'
+                folder_icon_item.style.color = '#c86b85'
             }
         }
 
