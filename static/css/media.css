@@ -1,5 +1,5 @@
 /* 针对移动端屏幕的样式 */
-@media (max-width: 768px) {
+@media (max-width: 630px) {
     .grid-item {
         width: 180px; /* 固定宽度 */
     }

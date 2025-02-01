@@ -138,8 +138,8 @@ modal.addEventListener('mousemove', (e) => {
         let deltaX = e.clientX - startX;
         let deltaY = e.clientY - startY;
         // 根据缩放比例调整偏移量，避免移动过大
-        img_offsetX += deltaX;
-        img_offsetY += deltaY;
+        img_offsetX += deltaX / scale;
+        img_offsetY += deltaY / scale;
 
         // // 更新 lastX 和 lastY，防止偏移量累加出现误差
         startX = e.clientX;
@@ -157,8 +157,8 @@ previewImage.addEventListener('touchmove', function(e) {
         const moveY = e.touches[0].clientY - startY;
 
         // 更新偏移量
-        img_offsetX += moveX;
-        img_offsetY += moveY;
+        img_offsetX += moveX / scale;
+        img_offsetY += moveY / scale;
 
         startX = e.touches[0].clientX
         startY = e.touches[0].clientY
