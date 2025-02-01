@@ -141,7 +141,7 @@
                     <li id="{{ folder.folder_id }}"
                         class="folder {% if folder.folder_id == folder_id %} highlighted {% endif %}"
                         data-folder-read="{{ folder_read }}" data-folder-relative-path="{{ folder.relative_path }}">
-                        <a onclick="goToFolder('{{ folder.folder_id }}', '{{ folder.parent_folder_id }}')">
+                        <a onclick="goToFolder('{{ folder.folder_id }}')">
                             <div class="folder-bar"
                                  style="background-color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} transparent {% endif %};
                                          {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};">
@@ -234,7 +234,7 @@
                         {% set folder_like = folder_details[folder.folder_id].like_status %}
                         {% set folder_delete = folder_details[folder.folder_id].delete_status %}
                         <a class="folder-icon" id="folder-icon" data-folder-id="{{ folder.folder_id }}"
-                           onClick="goToFolder('{{ folder.folder_id }}', '{{ folder.parent_folder_id }}')">
+                           onClick="goToFolder('{{ folder.folder_id }}')">
                             <i class="fas fa-folder" style="color: {% if folder_like == 1 and folder.relative_path != '上一级' %} #f5b1aa {% else %} 'var(--primary-color)' {% endif %};
                                  {% if folder_delete == 1 %} text-decoration: line-through; {% endif %};"></i> <!-- 文件夹图标 -->
                             <span style="color: {% if folder_read == 0 or folder_like == 1 %} 'var(--text-color)' {% else %} #777 {% endif %};">{{ folder.relative_path | truncate(25) }}</span>
@@ -268,14 +268,8 @@
 <script src="/static/js/preview-modal.js"></script>
 <script>
     const links = {{ links | tojson }};
-    function goToFolder(folder_id, parent_folder_id) {
-        {#console.log(folder_id)#}
-        if (document.getElementById('openInNewWindow').checked) {
-            window.open("{{ url_for('index') }}?id=" + folder_id, '_blank');
-        } else {
-            console.log("{{ url_for('index') }}?id=" + folder_id)
-            window.location.href = "{{ url_for('index') }}?id=" + folder_id;
-        }
+    function goToFolder(folder_id) {
+        window.location.href = "{{ url_for('index') }}?id=" + folder_id;
     }
     function toggleMenu() {
         var menu = document.getElementById('popupMenu');
