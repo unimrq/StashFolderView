@@ -53,21 +53,23 @@
 .nav-btn {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
+    /*transform: translateY(-50%);*/
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    padding: 10px;
+    /*padding: 10px;*/
     cursor: pointer;
     font-size: 24px;
 }
 
 .prev-btn {
     left: 10px;
+    z-index: 1005;
 }
 
 .next-btn {
     right: 10px;
+    z-index: 1005;
 }
 
 .close {
@@ -85,7 +87,7 @@
 .image-count {
     position: absolute;
     left: 50%;     /* 水平居中 */
-    bottom: 10px;
+    top: 95%;
     transform: translateX(-50%);  /* 精确居中 */
     color: white;
     font-size: 18px;
@@ -97,11 +99,15 @@
 
 @media (max-width: 630px) {
     .nav-btn{
-        top: calc(100vh - 25px);
+        top: 90%;
+    }
+    .image-count{
+        top: 90%;
     }
 
     .modal-content {
         max-width: 100%;
+        max-height: 80%
     }
 
     .close {

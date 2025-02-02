@@ -116,7 +116,7 @@ previewImage.addEventListener('wheel', (e) => {
 });
 
 
-modal.addEventListener('mousedown', (e) => {
+previewImage.addEventListener('mousedown', (e) => {
     // 防止图片的默认拖动行为
     e.preventDefault();
 
@@ -132,7 +132,7 @@ modal.addEventListener('mousedown', (e) => {
 });
 
 // 鼠标移动时拖动图片
-modal.addEventListener('mousemove', (e) => {
+previewImage.addEventListener('mousemove', (e) => {
     if (isLongPress) {
         // 计算鼠标的相对移动
         let deltaX = e.clientX - startX;
@@ -173,13 +173,13 @@ previewImage.addEventListener('touchmove', function(e) {
 });
 
 // 鼠标松开时停止拖动
-modal.addEventListener('mouseup', () => {
+previewImage.addEventListener('mouseup', () => {
     // 清除定时器
     clearTimeout(pressTimer);
     isLongPress = false;
 });
 
-modal.addEventListener('mouseleave', () => {
+previewImage.addEventListener('mouseleave', () => {
     // 清除定时器
     clearTimeout(pressTimer);
     isLongPress = false;
@@ -199,28 +199,30 @@ previewImage.addEventListener('touchend', function(e) {
     const timeDifference = currentTime - lastTouchTime;
 
     if (timeDifference < 500 && timeDifference > 0) {
-        // 双击事件发生，时间间隔小于300ms视为双击
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        if (scale < 10) {
-            // 向上滚动：放大
-            // console.log("offset1", img_offsetX, img_offsetY)
-            offsetX = (centerX - e.touches[0].clientX);
-            offsetY = (centerY - e.touches[0].clientY);
-            scale *= 3;
+        if(e.touches && e.touches.length > 0){
+            // 双击事件发生，时间间隔小于300ms视为双击
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            if (scale < 10) {
+                // 向上滚动：放大
+                // console.log("offset1", img_offsetX, img_offsetY)
+                offsetX = (centerX - e.touches[0].clientX);
+                offsetY = (centerY - e.touches[0].clientY);
+                scale *= 3;
 
-            img_offsetX += offsetX
-            img_offsetY += offsetY
-            // console.log("offset", img_offsetX, img_offsetY)
-            previewImage.style.transition = 'transform 0.3s ease';
-            previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
-        } else {
-            // 向下滚动：缩小
-            scale = 1
-            img_offsetX = 0
-            img_offsetY = 0
-            previewImage.style.transition = 'transform 0.3s ease';
-            previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
+                img_offsetX += offsetX
+                img_offsetY += offsetY
+                // console.log("offset", img_offsetX, img_offsetY)
+                previewImage.style.transition = 'transform 0.3s ease';
+                previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
+            } else {
+                // 向下滚动：缩小
+                scale = 1
+                img_offsetX = 0
+                img_offsetY = 0
+                previewImage.style.transition = 'transform 0.3s ease';
+                previewImage.style.transform = `scale(${scale}) translate(${img_offsetX}px, ${img_offsetY}px)`;
+            }
         }
     }
     lastTouchTime = currentTime; // 更新上次触摸时间
