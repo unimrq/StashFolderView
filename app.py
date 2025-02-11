@@ -361,6 +361,7 @@ def index():
 
     folder_details = folder_status_process(folder_id, root_folders, folder_has_subfolders)
 
+
     return render_template('index.html', root_folders=root_folders,
                            folder_id=folder_id, folder_details=folder_details,
                            current_path_parts=current_path_parts, network_status=network_status,
