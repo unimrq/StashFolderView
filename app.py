@@ -138,8 +138,6 @@ def update_network_status():
     global network_status
     data = request.get_json()
     network_status = int(data['network_status'])
-    # print("network_status", network_status)
-
     return jsonify({'success': True})
 
 
