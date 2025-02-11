@@ -1,4 +1,3 @@
-
 function logout() {
     fetch('/logout', {
         method: 'GET',

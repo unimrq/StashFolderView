@@ -158,7 +158,6 @@ def check_login():
         if logged_in != generate_encrypted_string(username, password):
             return False
 
-    # 获取登录时间，并确保它是带时区的时间对象
     login_time = session.get('login_time')
 
     if login_time:
