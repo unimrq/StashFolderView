@@ -6,6 +6,8 @@ on:
       - master
     paths:
       - 'Dockerfile'
+      - '**.js'
+      - '**.css'
       - '**.py'
       - 'requirements.txt'
 
@@ -39,7 +41,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:latest
-            ${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:${{ env.GIT_SHA }}
-          cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.GIT_SHA }}
+          cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
