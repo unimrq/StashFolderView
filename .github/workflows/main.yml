@@ -3,7 +3,7 @@ name: Docker Build on Commit
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'Dockerfile'
       - '**.py'
